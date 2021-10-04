@@ -8,14 +8,13 @@ import (
 )
 
 func main() {
-	configs.LoadEnv()
 	configs.LoadConfigs()
-
 	dbConnection := bootstrap.InitDatabaseConnection()
 	defer func() {
 		_ = dbConnection.Close()
 	}()
-	bootstrap.LoadServices(dbConnection)
-	server := api.NewServer(api.NewRouter())
-	server.Run(":8080")
+	appContext := bootstrap.LoadServices(dbConnection)
+	controller := bootstrap.LoadControllers(appContext)
+	server := api.NewServer(api.NewRouter(controller))
+	server.Run(configs.Get().Port)
 }

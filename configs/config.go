@@ -1,7 +1,7 @@
 package configs
 
 type Config struct {
-	Port int
+	Port string
 
 	DbDriver   string
 	DbUser     string
@@ -22,8 +22,9 @@ func Get() *Config {
 }
 
 func LoadConfigs() {
+	LoadEnv()
 	Common = &Config{
-		Port: getIntD("PORT", 8080),
+		Port: getStringD("PORT", "8080"),
 
 		DbDriver:   getString("DB_DRIVER"),
 		DbUser:     getString("DB_USER"),

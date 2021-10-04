@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"file_manager/api/resources"
 	"file_manager/internal/enums"
 	"github.com/gin-gonic/gin"
@@ -9,15 +8,7 @@ import (
 )
 
 type BaseController struct {
-	ctx *context.Context
-}
-
-func NewBaseController() *BaseController {
-	return &BaseController{}
-}
-
-func (b *BaseController) SetContext(ctx *context.Context) {
-	b.ctx = ctx
+	AppContext *ApplicationContext
 }
 
 func (b *BaseController) Success(c *gin.Context, data interface{}) {

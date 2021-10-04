@@ -12,6 +12,10 @@ import (
 type TokenService struct {
 }
 
+func NewTokenService() *TokenService {
+	return &TokenService{}
+}
+
 func (t *TokenService) VerifyToken(c *gin.Context) enums.Error {
 	cookieToken, err := c.Request.Cookie("token")
 	if err != nil {

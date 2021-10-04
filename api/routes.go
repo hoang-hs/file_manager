@@ -21,16 +21,18 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 */
 
-func NewRouter() *gin.Engine {
-	gin.SetMode(gin.ReleaseMode)
+type ControllerManager struct {
+	FileController     *controllers.FileController
+	LoginController    *controllers.LoginController
+	RegisterController *controllers.RegisterController
+}
+
+func NewRouter(controllerManager *ControllerManager) *gin.Engine {
 	router := gin.Default()
-	//router.Use(CORSMiddleware())
-
-	router.POST("/signup", controllers.RegisterController.SignUp)
-	router.POST("/login", controllers.Login)
-	router.GET("/tree/*path", controllers.MiddleWare(), controllers.Display)
-	router.POST("/upload/*path", controllers.MiddleWare(), controllers.UploadFile)
-	router.DELETE("/delete/*path", controllers.MiddleWare(), controllers.DeleteFile)
-
+	router.POST("/signup", controllerManager.RegisterController.SignUp)
+	router.POST("/login", controllerManager.LoginController.Login)
+	router.GET("/tree/*path", controllers.MiddleWare(), controllerManager.FileController.Display)
+	router.POST("/upload/*path", controllers.MiddleWare(), controllerManager.FileController.UploadFile)
+	router.DELETE("/delete/*path", controllers.MiddleWare(), controllerManager.FileController.DeleteFile)
 	return router
 }

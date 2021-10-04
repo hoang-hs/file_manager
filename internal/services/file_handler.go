@@ -12,6 +12,10 @@ import (
 type FileService struct {
 }
 
+func NewFileService() *FileService {
+	return &FileService{}
+}
+
 func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
 	root := os.Getenv("ROOT")
 	str := root + c.Query("path")

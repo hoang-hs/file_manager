@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"file_manager/api/mappers"
-	"file_manager/bootstrap"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,8 +9,16 @@ type FileController struct {
 	BaseController
 }
 
+func NewFileController(appContext *ApplicationContext) *FileController {
+	return &FileController{
+		BaseController{
+			AppContext: appContext,
+		},
+	}
+}
+
 func (o *FileController) Display(c *gin.Context) {
-	files, err := bootstrap.FileService.GetFile(c)
+	files, err := o.AppContext.FileService.GetFile(c)
 	if err != nil {
 		o.Error(c, err.GetHttpCode(), err.GetMessage())
 	}
@@ -21,7 +28,7 @@ func (o *FileController) Display(c *gin.Context) {
 }
 
 func (o *FileController) UploadFile(c *gin.Context) {
-	err := bootstrap.FileService.UploadFile(c)
+	err := o.AppContext.FileService.UploadFile(c)
 	if err != nil {
 		o.Error(c, err.GetHttpCode(), err.GetMessage())
 	}
@@ -29,7 +36,7 @@ func (o *FileController) UploadFile(c *gin.Context) {
 }
 
 func (o *FileController) DeleteFile(c *gin.Context) {
-	err := bootstrap.FileService.DeleteFile(c)
+	err := o.AppContext.FileService.DeleteFile(c)
 	if err != nil {
 		o.Error(c, err.GetHttpCode(), err.GetMessage())
 	}
