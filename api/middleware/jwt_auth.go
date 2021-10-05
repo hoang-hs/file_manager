@@ -1,11 +1,6 @@
-package controllers
+package middleware
 
-import (
-	"file_manager/bootstrap"
-	"github.com/gin-gonic/gin"
-)
-
-// cycle is here
+import "github.com/gin-gonic/gin"
 
 func MiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
