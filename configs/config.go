@@ -24,7 +24,7 @@ func Get() *Config {
 func LoadConfigs() {
 	LoadEnv()
 	Common = &Config{
-		Port: getStringD("PORT", "8080"),
+		Port: getStringD("PORT", ":8080"),
 
 		DbDriver:   getString("DB_DRIVER"),
 		DbUser:     getString("DB_USER"),

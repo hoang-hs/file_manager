@@ -2,25 +2,26 @@ package bootstrap
 
 import (
 	"database/sql"
+	"file_manager/configs"
 	"fmt"
 	"log"
-	"os"
 )
 
 func InitDatabaseConnection() *sql.DB {
-	dbDriver := os.Getenv("DB_DRIVER")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbPort := os.Getenv("DB_PORT")
-	dbHost := os.Getenv("DB_HOST")
-	dbName := os.Getenv("DB_NAME")
+	cf := configs.Get()
+	dbDriver := cf.DbDriver
+	dbUser := cf.DbUser
+	dbPassword := cf.DbPassword
+	dbPort := cf.DbPort
+	dbHost := cf.DbHost
+	dbName := cf.DbName
 	return newConnection(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName)
 }
 
 func newConnection(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName string) *sql.DB {
-	DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+	DbUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 
-	conn, err := sql.Open(dbDriver, DBURL)
+	conn, err := sql.Open(dbDriver, DbUrl)
 	if err != nil {
 		log.Fatalf("[Can not connect to database %s]: %s\n", dbDriver, err)
 	} else {

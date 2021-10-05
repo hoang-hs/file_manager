@@ -2,24 +2,9 @@ package api
 
 import (
 	"file_manager/api/controllers"
+	"file_manager/api/middleware"
 	"github.com/gin-gonic/gin"
 )
-
-/*
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Credentials", "true")
-		c.Header("Access-Control-Allow-Headers", "*")
-		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT, DELETE")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-		c.Next()
-	}
-}
-*/
 
 type ControllerManager struct {
 	FileController     *controllers.FileController
@@ -28,11 +13,15 @@ type ControllerManager struct {
 }
 
 func NewRouter(controllerManager *ControllerManager) *gin.Engine {
+	//gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.POST("/signup", controllerManager.RegisterController.SignUp)
 	router.POST("/login", controllerManager.LoginController.Login)
-	router.GET("/tree/*path", controllers.MiddleWare(), controllerManager.FileController.Display)
-	router.POST("/upload/*path", controllers.MiddleWare(), controllerManager.FileController.UploadFile)
-	router.DELETE("/delete/*path", controllers.MiddleWare(), controllerManager.FileController.DeleteFile)
+	router.Use(middleware.RequiredJwtAuthentication())
+	{
+		router.GET("/tree/*path", controllerManager.FileController.Display)
+		router.POST("/upload/*path", controllerManager.FileController.UploadFile)
+		router.DELETE("/delete/*path", controllerManager.FileController.DeleteFile)
+	}
 	return router
 }
