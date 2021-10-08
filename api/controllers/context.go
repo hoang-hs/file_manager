@@ -11,3 +11,13 @@ type ApplicationContext struct {
 	AuthService     *services.AuthService
 	RegisterService *services.RegisterService
 }
+
+func NewAppLiCationContext(db *sql.DB, fileService *services.FileService,
+	authService *services.AuthService, registerService *services.RegisterService) *ApplicationContext {
+	return &ApplicationContext{
+		DB:              db,
+		FileService:     fileService,
+		AuthService:     authService,
+		RegisterService: registerService,
+	}
+}

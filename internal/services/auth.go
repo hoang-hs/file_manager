@@ -1,6 +1,7 @@
 package services
 
 import (
+	"file_manager/configs"
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
 	"file_manager/internal/helpers"
@@ -14,12 +15,12 @@ import (
 
 type AuthService struct {
 	expiredDuration time.Duration
-	userRepository  repositories.UserRepository
+	userRepository  *repositories.UserRepository
 }
 
-func NewAuthService(u repositories.UserRepository, expiredDuration time.Duration) *AuthService {
+func NewAuthService(u *repositories.UserRepository) *AuthService {
 	return &AuthService{
-		expiredDuration: expiredDuration,
+		expiredDuration: time.Duration(configs.Get().ExpiredDuration),
 		userRepository:  u,
 	}
 }

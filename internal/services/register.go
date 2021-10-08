@@ -11,10 +11,10 @@ import (
 )
 
 type RegisterService struct {
-	userRepository repositories.UserRepository
+	userRepository *repositories.UserRepository
 }
 
-func NewRegisterService(u repositories.UserRepository) *RegisterService {
+func NewRegisterService(u *repositories.UserRepository) *RegisterService {
 	return &RegisterService{
 		userRepository: u,
 	}

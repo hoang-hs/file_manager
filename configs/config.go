@@ -12,6 +12,8 @@ type Config struct {
 
 	SecretKey string
 
+	Root string
+
 	ExpiredDuration int
 }
 
@@ -34,6 +36,8 @@ func LoadConfigs() {
 		DbName:     getString("DB_NAME"),
 
 		SecretKey: getString("SECRET_KEY"),
+
+		Root: getStringD("ROOT", "/home"),
 
 		ExpiredDuration: getIntD("EXPIRED_DURATION", 8760),
 	}

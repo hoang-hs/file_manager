@@ -1,6 +1,7 @@
 package services
 
 import (
+	"file_manager/configs"
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ func NewFileService() *FileService {
 }
 
 func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
-	root := os.Getenv("ROOT")
+	root := configs.Get().Root
 	str := root + c.Query("path")
 	files, err := os.Open(str)
 	if err != nil {
@@ -45,7 +46,7 @@ func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
 }
 
 func (f *FileService) UploadFile(c *gin.Context) enums.Error {
-	root := os.Getenv("ROOT")
+	root := configs.Get().Root
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Printf("cannot get file from formfile, err: [%v]", err.Error())
@@ -60,7 +61,7 @@ func (f *FileService) UploadFile(c *gin.Context) enums.Error {
 }
 
 func (f *FileService) DeleteFile(c *gin.Context) enums.Error {
-	root := os.Getenv("ROOT")
+	root := configs.Get().Root
 	str := root + c.Query("path")
 	err := os.RemoveAll(str)
 	if err != nil {

@@ -32,7 +32,7 @@ func (o *FileController) UploadFile(c *gin.Context) {
 	if err != nil {
 		o.Error(c, err.GetHttpCode(), err.GetMessage())
 	}
-	o.Success(c, "uploadOk")
+	o.Success(c, "upload successfully")
 }
 
 func (o *FileController) DeleteFile(c *gin.Context) {
@@ -40,5 +40,5 @@ func (o *FileController) DeleteFile(c *gin.Context) {
 	if err != nil {
 		o.Error(c, err.GetHttpCode(), err.GetMessage())
 	}
-	o.Success(c, "deleteOk")
+	o.Success(c, "delete successfully")
 }
