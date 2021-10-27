@@ -19,7 +19,7 @@ func NewFileController(appContext *ApplicationContext) *FileController {
 }
 
 func (o *FileController) Display(c *gin.Context) {
-	path := o.GetPath(c)
+	path := o.GetQuery(c)
 	if len(path) == 0 {
 		return
 	}
@@ -34,7 +34,7 @@ func (o *FileController) Display(c *gin.Context) {
 }
 
 func (o *FileController) UploadFile(c *gin.Context) {
-	path := o.GetPath(c)
+	path := o.GetQuery(c)
 	if len(path) == 0 {
 		return
 	}
@@ -47,7 +47,7 @@ func (o *FileController) UploadFile(c *gin.Context) {
 }
 
 func (o *FileController) DeleteFile(c *gin.Context) {
-	path := o.GetPath(c)
+	path := o.GetQuery(c)
 	if len(path) == 0 {
 		return
 	}

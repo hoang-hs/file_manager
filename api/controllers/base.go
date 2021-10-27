@@ -47,13 +47,24 @@ func (b *BaseController) Unauthorized(c *gin.Context) {
 	b.Error(c, http.StatusUnauthorized, "Unauthorized")
 }
 
-func (b *BaseController) GetPath(c *gin.Context) string {
-	path := c.Query("path")
-	if len(path) == 0 {
+func (b *BaseController) GetQuery(c *gin.Context) string {
+	var query struct {
+		Path string `form:"path"`
+	}
+
+	//query := entities.Query{}
+	err := c.ShouldBindQuery(&query)
+	if err != nil {
+		log.Errorf("bind query fail, err %s", err)
+		b.DefaultBadRequest(c)
+		return ""
+	}
+	if len(query.Path) == 0 {
 		log.Errorf("path is nil")
 		b.DefaultBadRequest(c)
 		return ""
 	}
-	str := configs.Get().Root + path
-	return str
+	log.Info("path: ", query.Path)
+	query.Path = configs.Get().Root + query.Path
+	return query.Path
 }
