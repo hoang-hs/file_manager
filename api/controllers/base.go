@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"file_manager/api/resources"
+	"file_manager/configs"
 	"file_manager/internal/enums"
+	"file_manager/internal/log"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -17,7 +19,7 @@ func (b *BaseController) Success(c *gin.Context, data interface{}) {
 }
 
 func (b *BaseController) Error(c *gin.Context, httpCode int, message string) {
-	c.JSON(httpCode, resources.NewErrorResource(message))
+	c.JSON(httpCode, resources.NewMessageResource(message))
 	c.Abort()
 }
 
@@ -43,4 +45,15 @@ func (b *BaseController) InternetServerError(c *gin.Context) {
 
 func (b *BaseController) Unauthorized(c *gin.Context) {
 	b.Error(c, http.StatusUnauthorized, "Unauthorized")
+}
+
+func (b *BaseController) GetPath(c *gin.Context) string {
+	path := c.Query("path")
+	if len(path) == 0 {
+		log.Errorf("path is nil")
+		b.DefaultBadRequest(c)
+		return ""
+	}
+	str := configs.Get().Root + path
+	return str
 }

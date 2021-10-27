@@ -1,7 +1,6 @@
 package services
 
 import (
-	"file_manager/configs"
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
 	"file_manager/internal/log"
@@ -17,10 +16,8 @@ func NewFileService() *FileService {
 	return &FileService{}
 }
 
-func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
-	root := configs.Get().Root
-	str := root + c.Query("path")
-	files, err := os.Open(str)
+func (f *FileService) GetFile(path string) (*entities.Files, enums.Error) {
+	files, err := os.Open(path)
 	if err != nil {
 		log.Errorf("cannot open dir,err: [%v]", err)
 		return nil, enums.NewCustomHttpError(http.StatusBadRequest, "dir invalid")
@@ -45,14 +42,13 @@ func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
 	return listDir, nil
 }
 
-func (f *FileService) UploadFile(c *gin.Context) enums.Error {
-	root := configs.Get().Root
+func (f *FileService) UploadFile(c *gin.Context, path string) enums.Error {
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Errorf("cannot get file from form file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "form file invalid")
 	}
-	path := root + c.Query("path") + "/"
+	path = path + "/"
 	if err := c.SaveUploadedFile(file, path+file.Filename); err != nil {
 		log.Errorf("cannot save file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "query wrong")
@@ -60,10 +56,8 @@ func (f *FileService) UploadFile(c *gin.Context) enums.Error {
 	return nil
 }
 
-func (f *FileService) DeleteFile(c *gin.Context) enums.Error {
-	root := configs.Get().Root
-	str := root + c.Query("path")
-	err := os.RemoveAll(str)
+func (f *FileService) DeleteFile(path string) enums.Error {
+	err := os.RemoveAll(path)
 	if err != nil {
 		log.Errorf("cannot remove file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "query wrong")

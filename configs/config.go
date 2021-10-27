@@ -1,7 +1,5 @@
 package configs
 
-import "fmt"
-
 type Config struct {
 	AppEnv string
 
@@ -33,16 +31,15 @@ func LoadConfigs(mode string) {
 	case "dev":
 		pathConfig = `.env.dev`
 	case "prod":
-		pathConfig = `config/.env`
+		pathConfig = `config/.env.dev`
 	default:
-		fmt.Println("please use the help command: -h")
-		return
+		pathConfig = `.env.dev`
 	}
 	LoadEnv(pathConfig)
 	Common = &Config{
 		AppEnv: mode,
 
-		ServerAddress: getStringD("PORT", "0.0.0.0:8080"),
+		ServerAddress: getStringD("SERVER_ADDR", "0.0.0.0:8080"),
 
 		DbDriver:   getString("DB_DRIVER"),
 		DbUser:     getString("DB_USER"),
@@ -53,7 +50,7 @@ func LoadConfigs(mode string) {
 
 		SecretKey: getString("SECRET_KEY"),
 
-		Root: getStringD("ROOT", "/home"),
+		Root: getStringD("ROOT", "/home/gumball/"),
 
 		ExpiredDuration: getIntD("EXPIRED_DURATION", 8760),
 	}

@@ -54,10 +54,8 @@ func main() {
 		fx.Invoke(func(lc fx.Lifecycle, engine *gin.Engine) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					log.Infof("Application will be served at %d. Service path: %s",
-						8080, "/api")
 					go func() {
-						if err := engine.Run(fmt.Sprintf(":%d", 8080)); err != nil {
+						if err := engine.Run(fmt.Sprintf("%s", configs.Get().ServerAddress)); err != nil {
 							log.Fatalf("Cannot start application due by error [%v]", err)
 						}
 					}()

@@ -27,10 +27,9 @@ func (o *RegisterController) SignUp(c *gin.Context) {
 	}
 	userModel, err := o.AppContext.RegisterService.SignUp(&registerPack)
 	if err != nil {
-		o.Error(c, err.GetHttpCode(), err.GetMessage())
+		o.ErrorData(c, err)
 		return
 	}
-
 	resUser := mappers.ConvertUserModelToResource(userModel)
 	o.Success(c, resUser)
 }

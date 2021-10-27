@@ -28,7 +28,7 @@ func registerPublicRoutes(r *gin.RouterGroup, in RoutersIn) {
 }
 
 func registerProtectedRoutes(r *gin.RouterGroup, in RoutersIn) {
-	r.GET("/tree/*path", in.FileController.Display)
-	r.POST("/upload/*path", in.FileController.UploadFile)
-	r.DELETE("/delete/*path", in.FileController.DeleteFile)
+	r.GET("/tree", in.FileController.Display)
+	r.POST("/upload", in.FileController.UploadFile)
+	r.DELETE("/delete", in.FileController.DeleteFile)
 }

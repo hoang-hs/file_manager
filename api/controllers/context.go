@@ -10,7 +10,8 @@ type ApplicationContext struct {
 	RegisterService *services.RegisterService
 }
 
-func NewAppLiCationContext(fileService *services.FileService,
+func NewAppLiCationContext(
+	fileService *services.FileService,
 	authService *services.AuthService,
 	registerService *services.RegisterService,
 ) *ApplicationContext {
