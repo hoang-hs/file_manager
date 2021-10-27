@@ -4,8 +4,8 @@ import (
 	"file_manager/configs"
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
+	"file_manager/internal/log"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"os"
 )
@@ -22,14 +22,14 @@ func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
 	str := root + c.Query("path")
 	files, err := os.Open(str)
 	if err != nil {
-		log.Printf("cannot open dir,err: [%v]", err.Error())
+		log.Errorf("cannot open dir,err: [%v]", err)
 		return nil, enums.NewCustomHttpError(http.StatusBadRequest, "dir invalid")
 	}
 	fileInfo, err := files.Readdir(-1)
 	defer func() {
 		err = files.Close()
 		if err != nil {
-			log.Printf("cannot close file,err: [%v]", err.Error())
+			log.Errorf("cannot close file,err: [%v]", err)
 		}
 	}()
 	var data []entities.File
@@ -49,12 +49,12 @@ func (f *FileService) UploadFile(c *gin.Context) enums.Error {
 	root := configs.Get().Root
 	file, err := c.FormFile("file")
 	if err != nil {
-		log.Printf("cannot get file from formfile, err: [%v]", err.Error())
+		log.Errorf("cannot get file from form file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "form file invalid")
 	}
 	path := root + c.Query("path") + "/"
 	if err := c.SaveUploadedFile(file, path+file.Filename); err != nil {
-		log.Printf("cannot save file, err: [%v]", err.Error())
+		log.Errorf("cannot save file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "query wrong")
 	}
 	return nil
@@ -65,7 +65,7 @@ func (f *FileService) DeleteFile(c *gin.Context) enums.Error {
 	str := root + c.Query("path")
 	err := os.RemoveAll(str)
 	if err != nil {
-		log.Printf("cannot remove file, err: [%v]", err.Error())
+		log.Errorf("cannot remove file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "query wrong")
 	}
 	return nil

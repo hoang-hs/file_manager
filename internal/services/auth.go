@@ -5,11 +5,11 @@ import (
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
 	"file_manager/internal/helpers"
+	"file_manager/internal/log"
 	"file_manager/internal/models"
 	"file_manager/internal/repositories"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"time"
 )
 
@@ -31,16 +31,16 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 	var err error
 	user, err = auth.userRepository.FindByUsername(username)
 	if err == enums.ErrEntityNotFound {
-		log.Printf("Can not find user with username: %s", username)
-		return nil, *enums.ErrUnAuthenticated
+		log.Errorf("Can not find user with username: %s", username)
+		return nil, enums.ErrUnAuthenticated
 	}
 	if err != nil {
-		log.Printf("Error when query to database: %s", err.Error())
-		return nil, *enums.ErrSystemError
+		log.Errorf("Error when query to database: %s", err)
+		return nil, enums.ErrSystemError
 	}
 	if !auth.validatePassword(user.Password, authPackage.Password) {
-		log.Printf("Fail when validate password for username: %s", user.Username)
-		return nil, *enums.ErrUnAuthenticated
+		log.Errorf("Fail when validate password for username: %s", user.Username)
+		return nil, enums.ErrUnAuthenticated
 	}
 
 	tokenInfo := entities.AccessTokenInfo{
@@ -49,8 +49,8 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 	}
 	token, err := auth.generateToken(tokenInfo)
 	if err != nil {
-		log.Printf("Can not generate token: %s", err)
-		return nil, *enums.ErrSystemError
+		log.Errorf("Can not generate token: %s", err)
+		return nil, enums.ErrSystemError
 	}
 	return &entities.Authentication{
 		AccessToken: token,
@@ -66,7 +66,7 @@ func (auth *AuthService) validatePassword(hashPassword, password string) bool {
 func (auth *AuthService) generateToken(tokenInfo entities.AccessTokenInfo) (string, error) {
 	privateKey, err := helpers.GetPrivateKey()
 	if err != nil {
-		log.Printf("parse private key error, err:[%v]", err.Error())
+		log.Errorf("parse private key error, err:[%v]", err)
 		return "", err
 	}
 	claims := &entities.Claims{
@@ -79,7 +79,7 @@ func (auth *AuthService) generateToken(tokenInfo entities.AccessTokenInfo) (stri
 	aToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := aToken.SignedString(privateKey)
 	if err != nil {
-		log.Printf("Error when generate token: %s", err)
+		log.Errorf("Error when generate token: %s", err)
 		return "", err
 	}
 	return token, nil

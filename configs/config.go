@@ -1,7 +1,11 @@
 package configs
 
+import "fmt"
+
 type Config struct {
-	Port string
+	AppEnv string
+
+	ServerAddress string
 
 	DbDriver   string
 	DbUser     string
@@ -23,10 +27,22 @@ func Get() *Config {
 	return Common
 }
 
-func LoadConfigs() {
-	LoadEnv()
+func LoadConfigs(mode string) {
+	var pathConfig string
+	switch mode {
+	case "dev":
+		pathConfig = `.env.dev`
+	case "prod":
+		pathConfig = `config/.env`
+	default:
+		fmt.Println("please use the help command: -h")
+		return
+	}
+	LoadEnv(pathConfig)
 	Common = &Config{
-		Port: getStringD("PORT", ":8080"),
+		AppEnv: mode,
+
+		ServerAddress: getStringD("PORT", "0.0.0.0:8080"),
 
 		DbDriver:   getString("DB_DRIVER"),
 		DbUser:     getString("DB_USER"),
