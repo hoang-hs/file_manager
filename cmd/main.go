@@ -11,7 +11,6 @@ import (
 	"file_manager/internal/services"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/fx"
 )
 
@@ -22,7 +21,6 @@ func init() {
 
 func newGinEngine(logger log.Logging) (*gin.Engine, *gin.RouterGroup) {
 	app := gin.New()
-	//app.RedirectTrailingSlash = false
 	app.Use(log.GinZap(logger.GetZap().Desugar()))
 	return app, app.Group("")
 }

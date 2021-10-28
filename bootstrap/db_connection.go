@@ -5,6 +5,7 @@ import (
 	"file_manager/configs"
 	"file_manager/internal/log"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func InitDatabaseConnection() *sql.DB {
