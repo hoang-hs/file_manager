@@ -3,8 +3,8 @@ package bootstrap
 import (
 	"database/sql"
 	"file_manager/configs"
+	"file_manager/internal/log"
 	"fmt"
-	"log"
 )
 
 func InitDatabaseConnection() *sql.DB {
@@ -25,8 +25,7 @@ func newConnection(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName string) 
 	if err != nil {
 		log.Fatalf("[Can not connect to database %s]: %s\n", dbDriver, err)
 	} else {
-		log.Printf("[Connected to database] %s\n", dbDriver)
+		log.Infof("Connected to database: %s\n", dbDriver)
 	}
-
 	return conn
 }

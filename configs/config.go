@@ -1,7 +1,9 @@
 package configs
 
 type Config struct {
-	Port string
+	AppEnv string
+
+	ServerAddress string
 
 	DbDriver   string
 	DbUser     string
@@ -12,6 +14,8 @@ type Config struct {
 
 	SecretKey string
 
+	Root string
+
 	ExpiredDuration int
 }
 
@@ -21,10 +25,21 @@ func Get() *Config {
 	return Common
 }
 
-func LoadConfigs() {
-	LoadEnv()
+func LoadConfigs(mode string) {
+	var pathConfig string
+	switch mode {
+	case "dev":
+		pathConfig = `.env.dev`
+	case "prod":
+		pathConfig = `config/.env.dev`
+	default:
+		pathConfig = `.env.dev`
+	}
+	LoadEnv(pathConfig)
 	Common = &Config{
-		Port: getStringD("PORT", ":8080"),
+		AppEnv: mode,
+
+		ServerAddress: getStringD("SERVER_ADDR", "0.0.0.0:8080"),
 
 		DbDriver:   getString("DB_DRIVER"),
 		DbUser:     getString("DB_USER"),
@@ -34,6 +49,8 @@ func LoadConfigs() {
 		DbName:     getString("DB_NAME"),
 
 		SecretKey: getString("SECRET_KEY"),
+
+		Root: getStringD("ROOT", "/home/gumball/"),
 
 		ExpiredDuration: getIntD("EXPIRED_DURATION", 8760),
 	}

@@ -1,11 +1,11 @@
 package resources
 
-type ErrorResource struct {
+type Message struct {
 	Message string `json:"message"`
 }
 
-func NewErrorResource(message string) *ErrorResource {
-	return &ErrorResource{
+func NewMessageResource(message string) *Message {
+	return &Message{
 		Message: message,
 	}
 }

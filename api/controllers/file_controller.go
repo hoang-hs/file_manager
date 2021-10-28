@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"file_manager/api/mappers"
+	"file_manager/api/resources"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,9 +19,14 @@ func NewFileController(appContext *ApplicationContext) *FileController {
 }
 
 func (o *FileController) Display(c *gin.Context) {
-	files, err := o.AppContext.FileService.GetFile(c)
+	path := o.GetQuery(c)
+	if len(path) == 0 {
+		return
+	}
+	files, err := o.AppContext.FileService.GetFile(path)
 	if err != nil {
-		o.Error(c, err.GetHttpCode(), err.GetMessage())
+		o.ErrorData(c, err)
+		return
 	}
 	data := mappers.ConvertDirEntitiesToResource(files)
 	o.Success(c, data)
@@ -28,17 +34,28 @@ func (o *FileController) Display(c *gin.Context) {
 }
 
 func (o *FileController) UploadFile(c *gin.Context) {
-	err := o.AppContext.FileService.UploadFile(c)
-	if err != nil {
-		o.Error(c, err.GetHttpCode(), err.GetMessage())
+	path := o.GetQuery(c)
+	if len(path) == 0 {
+		return
 	}
-	o.Success(c, "uploadOk")
+	err := o.AppContext.FileService.UploadFile(c, path)
+	if err != nil {
+		o.ErrorData(c, err)
+		return
+	}
+	o.Success(c, resources.NewMessageResource("upload file successfully "))
 }
 
 func (o *FileController) DeleteFile(c *gin.Context) {
-	err := o.AppContext.FileService.DeleteFile(c)
-	if err != nil {
-		o.Error(c, err.GetHttpCode(), err.GetMessage())
+	path := o.GetQuery(c)
+	if len(path) == 0 {
+		return
 	}
-	o.Success(c, "deleteOk")
+	err := o.AppContext.FileService.DeleteFile(path)
+	if err != nil {
+		o.ErrorData(c, err)
+		return
+	}
+	o.Success(c, resources.NewMessageResource("delete file successfully "))
+
 }

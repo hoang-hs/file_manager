@@ -24,11 +24,13 @@ func (o *LoginController) Login(c *gin.Context) {
 	authPackage := entities.AuthPackage{}
 	if err := c.ShouldBindJSON(&authPackage); err != nil {
 		o.BadRequest(c, err.Error())
+		return
 	}
 
 	authentication, err := o.AppContext.AuthService.Authenticate(authPackage)
 	if err != nil {
-		o.Error(c, err.GetHttpCode(), err.GetMessage())
+		o.ErrorData(c, err)
+		return
 	}
 
 	http.SetCookie(c.Writer, &http.Cookie{

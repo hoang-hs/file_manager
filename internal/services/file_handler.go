@@ -3,8 +3,8 @@ package services
 import (
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
+	"file_manager/internal/log"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"os"
 )
@@ -16,19 +16,17 @@ func NewFileService() *FileService {
 	return &FileService{}
 }
 
-func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
-	root := os.Getenv("ROOT")
-	str := root + c.Query("path")
-	files, err := os.Open(str)
+func (f *FileService) GetFile(path string) (*entities.Files, enums.Error) {
+	files, err := os.Open(path)
 	if err != nil {
-		log.Printf("cannot open dir,err: [%v]", err.Error())
+		log.Errorf("cannot open dir,err: [%v]", err)
 		return nil, enums.NewCustomHttpError(http.StatusBadRequest, "dir invalid")
 	}
 	fileInfo, err := files.Readdir(-1)
 	defer func() {
 		err = files.Close()
 		if err != nil {
-			log.Printf("cannot close file,err: [%v]", err.Error())
+			log.Errorf("cannot close file,err: [%v]", err)
 		}
 	}()
 	var data []entities.File
@@ -44,27 +42,24 @@ func (f *FileService) GetFile(c *gin.Context) (*entities.Files, enums.Error) {
 	return listDir, nil
 }
 
-func (f *FileService) UploadFile(c *gin.Context) enums.Error {
-	root := os.Getenv("ROOT")
+func (f *FileService) UploadFile(c *gin.Context, path string) enums.Error {
 	file, err := c.FormFile("file")
 	if err != nil {
-		log.Printf("cannot get file from formfile, err: [%v]", err.Error())
+		log.Errorf("cannot get file from form file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "form file invalid")
 	}
-	path := root + c.Query("path") + "/"
+	path = path + "/"
 	if err := c.SaveUploadedFile(file, path+file.Filename); err != nil {
-		log.Printf("cannot save file, err: [%v]", err.Error())
+		log.Errorf("cannot save file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "query wrong")
 	}
 	return nil
 }
 
-func (f *FileService) DeleteFile(c *gin.Context) enums.Error {
-	root := os.Getenv("ROOT")
-	str := root + c.Query("path")
-	err := os.RemoveAll(str)
+func (f *FileService) DeleteFile(path string) enums.Error {
+	err := os.RemoveAll(path)
 	if err != nil {
-		log.Printf("cannot remove file, err: [%v]", err.Error())
+		log.Errorf("cannot remove file, err: [%v]", err)
 		return enums.NewCustomHttpError(http.StatusBadRequest, "query wrong")
 	}
 	return nil

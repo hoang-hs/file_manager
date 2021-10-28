@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"file_manager/internal/enums"
+	"file_manager/internal/log"
 	"file_manager/internal/models"
 	"github.com/google/uuid"
-	"log"
 )
 
 type UserRepository struct {
@@ -27,7 +27,7 @@ func (u *UserRepository) FindByUsername(username string) (*models.User, error) {
 
 	defer func() {
 		if err = stmt.Close(); err != nil {
-			log.Fatalf("cannot close stmt,err: [%v]", err.Error())
+			log.Fatalf("cannot close stmt,err: [%v]", err)
 		}
 	}()
 
@@ -44,7 +44,7 @@ func (u *UserRepository) FindByUsername(username string) (*models.User, error) {
 func (u *UserRepository) Insert(user *models.User) (*models.User, error) {
 	tx, err := u.db.Begin()
 	if err != nil {
-		log.Printf("u.db cannot begin, err:[%v]", err.Error())
+		log.Errorf("u.db cannot begin, err:[%v]", err)
 		return nil, err
 	}
 	user.Id = uuid.New().String()
@@ -57,7 +57,7 @@ func (u *UserRepository) Insert(user *models.User) (*models.User, error) {
 	}
 	defer func() {
 		if err := stmt.Close(); err != nil {
-			log.Fatalf("cannot close stmt, err:[%v]", err.Error())
+			log.Fatalf("cannot close stmt, err:[%v]", err)
 		}
 	}()
 	_, err = stmt.Exec(user.Id, user.FullName, user.Username, user.Password)
