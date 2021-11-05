@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"database/sql"
 	"file_manager/configs"
-	"file_manager/internal/log"
+	log2 "file_manager/internal/common/log"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -24,9 +24,9 @@ func newConnection(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName string) 
 
 	conn, err := sql.Open(dbDriver, DbUrl)
 	if err != nil {
-		log.Fatalf("[Can not connect to database %s]: %s\n", dbDriver, err)
+		log2.Fatalf("[Can not connect to database %s]: %s\n", dbDriver, err)
 	} else {
-		log.Infof("Connected to database: %s\n", dbDriver)
+		log2.Infof("Connected to database: %s\n", dbDriver)
 	}
 	return conn
 }

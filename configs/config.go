@@ -43,7 +43,7 @@ func LoadConfigs(mode string) {
 
 		DbDriver:   getString("DB_DRIVER"),
 		DbUser:     getString("DB_USER"),
-		DbPassword: getString("DB_PASSWORD"),
+		DbPassword: getString("DB_PASS"),
 		DbPort:     getString("DB_PORT"),
 		DbHost:     getString("DB_HOST"),
 		DbName:     getString("DB_NAME"),

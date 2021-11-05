@@ -6,8 +6,9 @@ import (
 	"file_manager/api/controllers"
 	"file_manager/bootstrap"
 	"file_manager/configs"
-	"file_manager/internal/log"
-	"file_manager/internal/repositories"
+	"file_manager/internal/adapter/repositories"
+	"file_manager/internal/common/log"
+	"file_manager/internal/ports"
 	"file_manager/internal/services"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ import (
 func init() {
 	mode := "dev"
 	configs.LoadConfigs(mode)
+	//notice.InitNotification(conf.TelegramBotToken, conf.TelegramChatID)
 }
 
 func newGinEngine(logger log.Logging) (*gin.Engine, *gin.RouterGroup) {
@@ -34,6 +36,7 @@ func main() {
 		fx.Provide(bootstrap.InitDatabaseConnection),
 
 		fx.Provide(repositories.NewUserRepository),
+		fx.Provide(ports.InitUserRepositoryPort),
 
 		fx.Provide(services.NewFileService),
 		fx.Provide(services.NewAuthService),

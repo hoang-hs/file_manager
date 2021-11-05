@@ -2,26 +2,26 @@ package services
 
 import (
 	"file_manager/configs"
+	log "file_manager/internal/common/log"
 	"file_manager/internal/entities"
 	"file_manager/internal/enums"
 	"file_manager/internal/helpers"
-	"file_manager/internal/log"
 	"file_manager/internal/models"
-	"file_manager/internal/repositories"
+	"file_manager/internal/ports"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 type AuthService struct {
-	expiredDuration time.Duration
-	userRepository  *repositories.UserRepository
+	expiredDuration    time.Duration
+	userRepositoryPort ports.UserRepositoryPort
 }
 
-func NewAuthService(u *repositories.UserRepository) *AuthService {
+func NewAuthService(userRepositoryPort ports.UserRepositoryPort) *AuthService {
 	return &AuthService{
-		expiredDuration: time.Duration(configs.Get().ExpiredDuration),
-		userRepository:  u,
+		expiredDuration:    time.Duration(configs.Get().ExpiredDuration),
+		userRepositoryPort: userRepositoryPort,
 	}
 }
 
@@ -29,7 +29,7 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 	username := authPackage.Username
 	user := &models.User{}
 	var err error
-	user, err = auth.userRepository.FindByUsername(username)
+	user, err = auth.userRepositoryPort.FindByUsername(username)
 	if err == enums.ErrEntityNotFound {
 		log.Errorf("Can not find user with username: %s", username)
 		return nil, enums.ErrUnAuthenticated
