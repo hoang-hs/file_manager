@@ -7,6 +7,7 @@ import (
 	"file_manager/bootstrap"
 	"file_manager/configs"
 	"file_manager/internal/common/log"
+	"file_manager/internal/common/notice"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -15,7 +16,7 @@ import (
 func init() {
 	mode := "dev"
 	configs.LoadConfigs(mode)
-	//notice.InitNotification(conf.TelegramBotToken, conf.TelegramChatID)
+	notice.InitNotification(conf.TelegramBotToken, conf.TelegramChatID)
 }
 
 func newGinEngine(logger log.Logging) (*gin.Engine, *gin.RouterGroup) {

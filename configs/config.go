@@ -17,6 +17,9 @@ type Config struct {
 	Root string
 
 	ExpiredDuration int
+
+	TelegramBotToken string
+	TelegramChatID   string
 }
 
 var Common *Config
@@ -53,5 +56,8 @@ func LoadConfigs(mode string) {
 		Root: getStringD("ROOT", "/home/gumball/"),
 
 		ExpiredDuration: getIntD("EXPIRED_DURATION", 8760),
+
+		TelegramBotToken: getString("FILE_MANAGER_TELEGRAM_BOT_TOKEN"),
+		TelegramChatID:   getString("FILE_MANAGER_TELEGRAM_CHAT_ID"),
 	}
 }

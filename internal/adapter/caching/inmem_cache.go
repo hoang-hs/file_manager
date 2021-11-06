@@ -1,7 +1,7 @@
 package caching
 
 import (
-	gocache "github.com/patrickmn/go-cache"
+	goCache "github.com/patrickmn/go-cache"
 	"time"
 )
 
@@ -11,12 +11,12 @@ const (
 )
 
 type InMemCache struct {
-	cache *gocache.Cache
+	cache *goCache.Cache
 }
 
 func NewInMemCache() *InMemCache {
 	return &InMemCache{
-		cache: gocache.New(TimeCache, TimeCachePurgeExItemInMemory),
+		cache: goCache.New(TimeCache, TimeCachePurgeExItemInMemory),
 	}
 }
 
