@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	log2 "file_manager/internal/common/log"
+	"file_manager/internal/common/log"
 	"file_manager/internal/enums"
 	"file_manager/internal/helpers"
 	"github.com/dgrijalva/jwt-go"
@@ -25,17 +25,17 @@ func verifyToken(c *gin.Context) enums.Error {
 	cookieToken, err := c.Request.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
-			log2.Errorf("cookie token is empty, err:[%v]", err)
+			log.Errorf("cookie token is empty, err:[%v]", err)
 			return enums.NewCustomHttpError(http.StatusUnauthorized, "cookie token empty")
 		}
-		log2.Error("get token fail, err:[%v]", err)
+		log.Error("get token fail, err:[%v]", err)
 		return enums.NewCustomSystemError("get token fail")
 	}
 
 	tokenStr := cookieToken.Value
 	privateKey, err := helpers.GetPrivateKey()
 	if err != nil {
-		log2.Errorf("parse private key error, err:[%v]", err)
+		log.Errorf("parse private key error, err:[%v]", err)
 		return enums.NewCustomSystemError("parse private key error")
 	}
 
@@ -48,15 +48,15 @@ func verifyToken(c *gin.Context) enums.Error {
 
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
-			log2.Errorf("err signature invalid, err:[%v]", err)
+			log.Errorf("err signature invalid, err:[%v]", err)
 			return enums.NewCustomHttpError(http.StatusUnauthorized, "signature_invalid")
 		}
-		log2.Errorf("parse with claims error, err:[%v]", err)
+		log.Errorf("parse with claims error, err:[%v]", err)
 		return enums.NewCustomSystemError("parseWithClaims error")
 	}
 
 	if !tkn.Valid {
-		log2.Error("token invalid")
+		log.Error("token invalid")
 		return enums.NewCustomHttpError(http.StatusUnauthorized, "token_invalid")
 	}
 	return nil

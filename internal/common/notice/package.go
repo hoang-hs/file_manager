@@ -2,10 +2,10 @@ package notice
 
 type Package struct {
 	Channel  Channel
-	Template NoticeTemplate
+	Template Template
 }
 
-func NewPackage(channel Channel, template NoticeTemplate) Package {
+func NewPackage(channel Channel, template Template) Package {
 	return Package{
 		Channel:  channel,
 		Template: template,
