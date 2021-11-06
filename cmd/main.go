@@ -16,7 +16,8 @@ import (
 func init() {
 	mode := "dev"
 	configs.LoadConfigs(mode)
-	notice.InitNotification(conf.TelegramBotToken, conf.TelegramChatID)
+	cf := configs.Get()
+	notice.InitNotification(cf.TelegramBotToken, cf.TelegramChatID)
 }
 
 func newGinEngine(logger log.Logging) (*gin.Engine, *gin.RouterGroup) {
