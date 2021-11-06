@@ -14,14 +14,14 @@ import (
 )
 
 type AuthService struct {
-	expiredDuration    time.Duration
-	userRepositoryPort ports.UserRepositoryPort
+	expiredDuration         time.Duration
+	userQueryRepositoryPort ports.UserQueryRepositoryPort
 }
 
-func NewAuthService(userRepositoryPort ports.UserRepositoryPort) *AuthService {
+func NewAuthService(userQueryRepositoryPort ports.UserQueryRepositoryPort) *AuthService {
 	return &AuthService{
-		expiredDuration:    time.Duration(configs.Get().ExpiredDuration),
-		userRepositoryPort: userRepositoryPort,
+		expiredDuration:         time.Duration(configs.Get().ExpiredDuration),
+		userQueryRepositoryPort: userQueryRepositoryPort,
 	}
 }
 
@@ -29,7 +29,7 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 	username := authPackage.Username
 	user := &models.User{}
 	var err error
-	user, err = auth.userRepositoryPort.FindByUsername(username)
+	user, err = auth.userQueryRepositoryPort.FindByUsername(username)
 	if err == enums.ErrEntityNotFound {
 		log.Errorf("Can not find user with username: %s", username)
 		return nil, enums.ErrUnAuthenticated

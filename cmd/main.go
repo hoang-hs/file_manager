@@ -6,10 +6,7 @@ import (
 	"file_manager/api/controllers"
 	"file_manager/bootstrap"
 	"file_manager/configs"
-	"file_manager/internal/adapter/repositories"
 	"file_manager/internal/common/log"
-	"file_manager/internal/ports"
-	"file_manager/internal/services"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -33,14 +30,8 @@ func main() {
 		fx.Supply(ctx),
 		fx.Provide(log.NewLogger),
 		fx.Invoke(log.RegisterGlobal),
-		fx.Provide(bootstrap.InitDatabaseConnection),
 
-		fx.Provide(repositories.NewUserRepository),
-		fx.Provide(ports.InitUserRepositoryPort),
-
-		fx.Provide(services.NewFileService),
-		fx.Provide(services.NewAuthService),
-		fx.Provide(services.NewRegisterService),
+		bootstrap.LoadServices(),
 
 		fx.Provide(controllers.NewAppLiCationContext),
 

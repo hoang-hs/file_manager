@@ -11,12 +11,17 @@ import (
 )
 
 type RegisterService struct {
-	userRepositoryPort ports.UserRepositoryPort
+	userQueryRepositoryPort   ports.UserQueryRepositoryPort
+	userCommandRepositoryPort ports.UserCommandRepositoryPort
 }
 
-func NewRegisterService(userRepositoryPort ports.UserRepositoryPort) *RegisterService {
+func NewRegisterService(
+	userQueryRepositoryPort ports.UserQueryRepositoryPort,
+	userCommandRepositoryPort ports.UserCommandRepositoryPort,
+) *RegisterService {
 	return &RegisterService{
-		userRepositoryPort: userRepositoryPort,
+		userQueryRepositoryPort:   userQueryRepositoryPort,
+		userCommandRepositoryPort: userCommandRepositoryPort,
 	}
 }
 
@@ -27,7 +32,7 @@ func (r *RegisterService) SignUp(registerPack *entities.RegisterPackage) (*model
 		return nil, err
 	}
 
-	modelUser, newErr := r.userRepositoryPort.Insert(user)
+	modelUser, newErr := r.userCommandRepositoryPort.Insert(user)
 	if newErr != nil {
 		log2.Errorf("error when insert, err: [%v]", err)
 		return nil, enums.ErrSystemError
@@ -36,7 +41,7 @@ func (r *RegisterService) SignUp(registerPack *entities.RegisterPackage) (*model
 }
 
 func (r *RegisterService) validate(registerPack *entities.RegisterPackage) (*models.User, enums.Error) {
-	user, _ := r.userRepositoryPort.FindByUsername(registerPack.Username)
+	user, _ := r.userQueryRepositoryPort.FindByUsername(registerPack.Username)
 	if user != nil {
 		log2.Info("username has exist")
 		return nil, enums.NewCustomHttpError(http.StatusConflict, "This username has exist")

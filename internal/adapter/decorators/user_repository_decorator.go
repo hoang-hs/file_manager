@@ -13,14 +13,14 @@ import (
 
 type UserRepositoryDecorator struct {
 	cache          caching.CacheStrategy
-	userRepository *repositories.UserRepository
+	userRepository *repositories.UserQueryRepository
 	expCacheTime   time.Duration
 	setKeyEnv      string
 }
 
 func NewUserRepositoryDecorator(
 	cache caching.CacheStrategy,
-	userRepository *repositories.UserRepository,
+	userRepository *repositories.UserQueryRepository,
 	expCacheTime time.Duration,
 	env string,
 ) *UserRepositoryDecorator {
@@ -33,29 +33,6 @@ func NewUserRepositoryDecorator(
 }
 
 func (d *UserRepositoryDecorator) FindByUsername(username string) (*models.User, error) {
-	key := d.generateCachingKeyDB(enums.DefaultNameSpace, d.setKeyEnv, username)
-	data, found := d.cache.Get(key)
-	if found {
-		user, err := d.getUserModelFromRemoteCachedData(data)
-		if err != nil {
-			return nil, err
-		}
-		return user, nil
-	}
-	userModel, err := d.userRepository.FindByUsername(username)
-	if err != nil {
-		return nil, err
-	}
-	cachingData, err := d.parseMapFromUser(userModel)
-	if err != nil {
-		log.Errorf("Can not parseMapFrom newsModels for cache with error: [%s]", err)
-		return userModel, nil
-	}
-	d.cache.Set(key, cachingData, d.expCacheTime)
-	return userModel, nil
-}
-
-func (d *UserRepositoryDecorator) Insert(user *models.User) (*models.User, error) {
 	key := d.generateCachingKeyDB(enums.DefaultNameSpace, d.setKeyEnv, username)
 	data, found := d.cache.Get(key)
 	if found {
