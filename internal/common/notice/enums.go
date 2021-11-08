@@ -17,6 +17,6 @@ const (
 )
 
 const (
-	GapTimeRequest        = 1 * time.Second
+	GapTimeRequest        = 3 * time.Second
 	GapTimeTooManyRequest = 1 * time.Minute
 )

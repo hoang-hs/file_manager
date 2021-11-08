@@ -2,6 +2,7 @@ package log
 
 import (
 	"file_manager/configs"
+	"file_manager/internal/common/log/hooks"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"time"
@@ -12,8 +13,11 @@ const (
 	OutputModeJson    = "json"
 )
 
+const callerSkip = 2
+
 type logger struct {
-	zap *zap.SugaredLogger
+	hookProcessor *hooks.HookProcessor
+	zap           *zap.SugaredLogger
 }
 
 func SyslogTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
@@ -56,8 +60,25 @@ func NewLogger() (Logging, error) {
 	if err != nil {
 		panic(err)
 	}
+
+	options := make([]zap.Option, 0)
+	options = append(options, zap.AddCallerSkip(callerSkip))
+
+	hookProcessor := hooks.NewHookProcessor(configs.Get().AppEnv)
+	hook := zap.Hooks(func(entry zapcore.Entry) error {
+		/*
+			if entry.Level.String() == "error" {
+				hookProcessor.ProcessEvent(entry)
+			}
+		*/
+		hookProcessor.ProcessEvent(entry)
+		return nil
+	})
+	options = append(options, hook)
+
 	return &logger{
-		zap: zapLogger.WithOptions(zap.AddCallerSkip(2)).Sugar(),
+		hookProcessor: hookProcessor,
+		zap:           zapLogger.WithOptions(options...).Sugar(),
 	}, nil
 }
 

@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 )
+
+const requestTimeOut = 10 * time.Second
 
 type Bot struct {
 	Token      string
@@ -36,8 +39,8 @@ func (bot *Bot) SendMessage(teleChan Channel, template Template) Response {
 		// TODO maybe preceding too :((
 		message = fmt.Sprintf("<strong>%s</strong> %s <pre>%s</pre>", template.Job, "\n", template.Message)
 	}
-	x := bot.BaseURL + SendMessage
-	req, _ := http.NewRequest("GET", x, nil)
+	url := bot.BaseURL + SendMessage
+	req, _ := http.NewRequest("GET", url, nil)
 	q := req.URL.Query()
 	q.Add("chat_id", teleChan.ChatID)
 	q.Add("text", message)
