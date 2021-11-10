@@ -27,7 +27,7 @@ func NewUserRepositoryDecorator(
 	return &UserRepositoryDecorator{
 		cache:          cache,
 		userRepository: userRepository,
-		expCacheTime:   configs.Get().ExpiredDuration,
+		expCacheTime:   configs.Get().ExpCacheTimeDb,
 		setKeyEnv:      fmt.Sprintf("%s_%s", enums.DefaultSetKeyDB, env),
 	}
 }

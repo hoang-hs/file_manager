@@ -27,8 +27,3 @@ func (i *InMemCache) Get(key string) (interface{}, bool) {
 func (i *InMemCache) Set(key string, data interface{}, ttl time.Duration) {
 	i.cache.Set(key, data, ttl)
 }
-
-// TODO implement BatchGet
-func (i *InMemCache) BatchGet(key []string) (interface{}, []string) {
-	panic("implement me")
-}
