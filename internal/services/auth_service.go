@@ -20,7 +20,7 @@ type AuthService struct {
 
 func NewAuthService(userQueryRepositoryPort ports.UserQueryRepositoryPort) *AuthService {
 	return &AuthService{
-		expiredDuration:         time.Duration(configs.Get().ExpiredDuration),
+		expiredDuration:         configs.Get().ExpiredDuration,
 		userQueryRepositoryPort: userQueryRepositoryPort,
 	}
 }
@@ -70,10 +70,10 @@ func (auth *AuthService) generateToken(tokenInfo entities.AccessTokenInfo) (stri
 		return "", err
 	}
 	claims := &entities.Claims{
-		Username: tokenInfo.UserId,
+		Id: tokenInfo.UserId,
 		StandardClaims: jwt.StandardClaims{
 			Id:        tokenInfo.UserId,
-			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+			ExpiresAt: time.Now().Add(tokenInfo.ExpiredDuration).Unix(),
 		},
 	}
 	aToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

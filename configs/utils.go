@@ -1,9 +1,9 @@
 package configs
 
 import (
-	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 func getString(key string) string {
@@ -17,14 +17,11 @@ func getStringD(key string, defaultValue string) string {
 	return value
 }
 
-func getIntD(key string, defaultValue int) int {
-	value := os.Getenv(key)
-	valueInt, err := strconv.Atoi(value)
-	if err != nil {
-		log.Fatalf("format env var wrong")
+func getTimeDurationWithDefault(key string, defaultValue int) time.Duration {
+	strValue := os.Getenv(key)
+	if len(strValue) == 0 {
+		return time.Duration(defaultValue) * time.Minute
 	}
-	if value == "" {
-		return defaultValue
-	}
-	return valueInt
+	numericValue, _ := strconv.Atoi(strValue)
+	return time.Duration(numericValue) * time.Minute
 }

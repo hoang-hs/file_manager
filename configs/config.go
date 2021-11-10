@@ -1,5 +1,7 @@
 package configs
 
+import "time"
+
 type Config struct {
 	AppEnv string
 
@@ -16,7 +18,9 @@ type Config struct {
 
 	Root string
 
-	ExpiredDuration int
+	ExpiredDuration time.Duration
+
+	ExpCacheTimeDb time.Duration
 
 	TelegramBotToken string
 	TelegramChatID   string
@@ -55,7 +59,9 @@ func LoadConfigs(mode string) {
 
 		Root: getStringD("ROOT", "/home/gumball/"),
 
-		ExpiredDuration: getIntD("EXPIRED_DURATION", 8760),
+		ExpiredDuration: getTimeDurationWithDefault("EXPIRED_DURATION", 15),
+
+		ExpCacheTimeDb: getTimeDurationWithDefault("CACHE_TIME_DB", 60),
 
 		TelegramBotToken: getString("FILE_MANAGER_TELEGRAM_BOT_TOKEN"),
 		TelegramChatID:   getString("FILE_MANAGER_TELEGRAM_CHAT_ID"),

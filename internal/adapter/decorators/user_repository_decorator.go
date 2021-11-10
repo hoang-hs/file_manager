@@ -2,6 +2,7 @@ package decorators
 
 import (
 	"encoding/json"
+	"file_manager/configs"
 	"file_manager/internal/adapter/repositories"
 	"file_manager/internal/common/caching"
 	"file_manager/internal/common/log"
@@ -21,13 +22,12 @@ type UserRepositoryDecorator struct {
 func NewUserRepositoryDecorator(
 	cache caching.CacheStrategy,
 	userRepository *repositories.UserQueryRepository,
-	expCacheTime time.Duration,
 	env string,
 ) *UserRepositoryDecorator {
 	return &UserRepositoryDecorator{
 		cache:          cache,
 		userRepository: userRepository,
-		expCacheTime:   expCacheTime,
+		expCacheTime:   configs.Get().ExpiredDuration,
 		setKeyEnv:      fmt.Sprintf("%s_%s", enums.DefaultSetKeyDB, env),
 	}
 }
