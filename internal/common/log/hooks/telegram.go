@@ -21,6 +21,7 @@ func NewHookProcessor(env string) *HookProcessor {
 func (h *HookProcessor) ProcessEvent(entry zapcore.Entry) {
 	message := fmt.Sprintf("%s \n %s \n %s", entry.Level.String(), entry.Message, entry.Stack)
 	template := notice.NewTemplate("file_manager "+h.env, message, notice.MarkdownV2)
-	p := notice.NewPackage(notice.GlobalChannel, template)
-	notice.GlobalJobPool.AddPackage(p)
+	//p := notice.NewPackage(notice.GlobalChannel, template)
+	notice.NewPackage(notice.GlobalChannel, template)
+	//notice.GlobalJobPool.AddPackage(p)
 }

@@ -3,8 +3,10 @@ package log
 import (
 	"file_manager/configs"
 	"file_manager/internal/common/log/hooks"
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"os"
 	"time"
 )
 
@@ -30,13 +32,10 @@ func CustomLevelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) 
 
 func NewLogger() (Logging, error) {
 	var level zapcore.Level
-	var outputMode string
 	cf := configs.Get()
 	if cf.AppEnv == "dev" {
-		outputMode = OutputModeConsole
 		level = zap.DebugLevel
 	} else if cf.AppEnv == "prod" {
-		outputMode = OutputModeJson
 		level = zap.InfoLevel
 	}
 
@@ -50,27 +49,19 @@ func NewLogger() (Logging, error) {
 		EncodeLevel:  CustomLevelEncoder,
 	}
 
-	zapLogger, err := zap.Config{
-		Level:            zap.NewAtomicLevelAt(level),
-		Encoding:         outputMode,
-		OutputPaths:      []string{"stderr"},
-		ErrorOutputPaths: []string{"stderr"},
-		EncoderConfig:    encoderConfig,
-	}.Build()
-	if err != nil {
-		panic(err)
-	}
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig),
+			getWriteSyncer("test.log"), level),
+		zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
+			zapcore.AddSync(os.Stderr), level),
+	)
 
 	options := make([]zap.Option, 0)
-	options = append(options, zap.AddCallerSkip(callerSkip))
-
 	hookProcessor := hooks.NewHookProcessor(configs.Get().AppEnv)
 	hook := zap.Hooks(func(entry zapcore.Entry) error {
-		/*
-			if entry.Level.String() == "error" {
-				hookProcessor.ProcessEvent(entry)
-			}
-		*/
+		if entry.Level.String() == "error" {
+			hookProcessor.ProcessEvent(entry)
+		}
 		hookProcessor.ProcessEvent(entry)
 		return nil
 	})
@@ -78,7 +69,7 @@ func NewLogger() (Logging, error) {
 
 	return &logger{
 		hookProcessor: hookProcessor,
-		zap:           zapLogger.WithOptions(options...).Sugar(),
+		zap:           zap.New(core, zap.AddCaller(), zap.AddCallerSkip(callerSkip)).WithOptions(options...).Sugar(),
 	}, nil
 }
 
@@ -108,4 +99,10 @@ func (l *logger) Fatalf(msgFormat string, args ...interface{}) {
 
 func (l *logger) GetZap() *zap.SugaredLogger {
 	return l.zap
+}
+
+func getWriteSyncer(fileLogName string) zapcore.WriteSyncer {
+	path := fmt.Sprintf("./%s", fileLogName)
+	file, _ := os.Create(path)
+	return zapcore.AddSync(file)
 }

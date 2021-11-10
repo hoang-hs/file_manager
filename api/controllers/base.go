@@ -3,7 +3,7 @@ package controllers
 import (
 	"file_manager/api/resources"
 	"file_manager/configs"
-	log2 "file_manager/internal/common/log"
+	"file_manager/internal/common/log"
 	"file_manager/internal/enums"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -53,12 +53,12 @@ func (b *BaseController) GetQuery(c *gin.Context) string {
 	}
 	err := c.ShouldBindQuery(&query)
 	if err != nil {
-		log2.Errorf("bind query fail, err %s", err)
+		log.Errorf("bind query fail, err %s", err)
 		b.DefaultBadRequest(c)
 		return ""
 	}
 	if len(query.Path) == 0 {
-		log2.Errorf("path is nil")
+		log.Errorf("path is nil")
 		b.DefaultBadRequest(c)
 		return ""
 	}
