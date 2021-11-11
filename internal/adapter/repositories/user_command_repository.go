@@ -16,10 +16,9 @@ func NewUserCommandRepository(baseRepository *baseRepository) *UserCommandReposi
 	}
 }
 
-func (c *UserCommandRepository) Insert(user *models.User) (*models.User, error) {
-	tx, err := c.db.Begin()
+func (u *UserCommandRepository) Insert(user *models.User) (*models.User, error) {
+	tx, err := u.db.Begin()
 	if err != nil {
-		log.Errorf("u.db cannot begin, err:[%v]", err)
 		return nil, err
 	}
 	user.Id = uuid.New().String()

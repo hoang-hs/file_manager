@@ -50,7 +50,7 @@ func NewLogger() (Logging, error) {
 	}
 
 	core := zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig),
+		zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
 			getWriteSyncer("test.log"), level),
 		zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
 			zapcore.AddSync(os.Stderr), level),
@@ -62,7 +62,6 @@ func NewLogger() (Logging, error) {
 		if entry.Level.String() == "error" {
 			hookProcessor.ProcessEvent(entry)
 		}
-		hookProcessor.ProcessEvent(entry)
 		return nil
 	})
 	options = append(options, hook)

@@ -4,7 +4,7 @@ import (
 	"file_manager/api/resources"
 	"file_manager/configs"
 	"file_manager/internal/common/log"
-	"file_manager/internal/enums"
+	"file_manager/internal/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -23,7 +23,7 @@ func (b *BaseController) Error(c *gin.Context, httpCode int, message string) {
 	c.Abort()
 }
 
-func (b *BaseController) ErrorData(c *gin.Context, data enums.Error) {
+func (b *BaseController) ErrorData(c *gin.Context, data errors.Error) {
 	httpCode := data.GetHttpCode()
 	if httpCode <= 0 {
 		httpCode = http.StatusBadRequest

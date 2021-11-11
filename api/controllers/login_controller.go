@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"file_manager/api/mappers"
+	"file_manager/configs"
 	"file_manager/internal/entities"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -26,7 +27,14 @@ func (o *LoginController) Login(c *gin.Context) {
 		o.BadRequest(c, err.Error())
 		return
 	}
-
+	if len(authPackage.Username) == 0 {
+		o.DefaultBadRequest(c)
+		return
+	}
+	if len(authPackage.Password) == 0 {
+		o.DefaultBadRequest(c)
+		return
+	}
 	authentication, err := o.AppContext.AuthService.Authenticate(authPackage)
 	if err != nil {
 		o.ErrorData(c, err)
@@ -36,7 +44,7 @@ func (o *LoginController) Login(c *gin.Context) {
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:    "token",
 		Value:   authentication.AccessToken,
-		Expires: time.Now().Add(time.Minute * 15),
+		Expires: time.Now().Add(time.Minute * configs.Get().ExpiredDuration),
 	})
 
 	resAuth := mappers.ConvertAuthenticationEntityToResource(authentication)

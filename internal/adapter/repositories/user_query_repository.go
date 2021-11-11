@@ -3,7 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"file_manager/internal/common/log"
-	"file_manager/internal/enums"
+	"file_manager/internal/errors"
 	"file_manager/internal/models"
 )
 
@@ -31,7 +31,7 @@ func (q *UserQueryRepository) FindByUsername(username string) (*models.User, err
 	err = stmt.QueryRow(username).Scan(&user.Id, &user.FullName, &user.Username, &user.Password)
 	switch {
 	case err == sql.ErrNoRows:
-		return nil, enums.ErrEntityNotFound
+		return nil, errors.ErrEntityNotFound
 	case err != nil:
 		return nil, err
 	}

@@ -23,6 +23,7 @@ func init() {
 func newGinEngine(logger log.Logging) (*gin.Engine, *gin.RouterGroup) {
 	app := gin.New()
 	app.Use(log.GinZap(logger.GetZap().Desugar()))
+	app.Use(log.RecoveryWithZap(logger.GetZap().Desugar()))
 	return app, app.Group("")
 }
 

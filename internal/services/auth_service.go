@@ -4,7 +4,7 @@ import (
 	"file_manager/configs"
 	log "file_manager/internal/common/log"
 	"file_manager/internal/entities"
-	"file_manager/internal/enums"
+	"file_manager/internal/errors"
 	"file_manager/internal/helpers"
 	"file_manager/internal/models"
 	"file_manager/internal/ports"
@@ -25,22 +25,22 @@ func NewAuthService(userQueryRepositoryPort ports.UserQueryRepositoryPort) *Auth
 	}
 }
 
-func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entities.Authentication, enums.Error) {
+func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entities.Authentication, errors.Error) {
 	username := authPackage.Username
 	user := &models.User{}
 	var err error
 	user, err = auth.userQueryRepositoryPort.FindByUsername(username)
-	if err == enums.ErrEntityNotFound {
+	if err == errors.ErrEntityNotFound {
 		log.Errorf("Can not find user with username: %s", username)
-		return nil, enums.ErrUnAuthenticated
+		return nil, errors.ErrUnAuthenticated
 	}
 	if err != nil {
 		log.Errorf("Error when query to database: %s", err)
-		return nil, enums.ErrSystemError
+		return nil, errors.ErrSystemError
 	}
 	if !auth.validatePassword(user.Password, authPackage.Password) {
 		log.Errorf("Fail when validate password for username: %s", user.Username)
-		return nil, enums.ErrUnAuthenticated
+		return nil, errors.ErrUnAuthenticated
 	}
 
 	tokenInfo := entities.AccessTokenInfo{
@@ -50,7 +50,7 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 	token, err := auth.generateToken(tokenInfo)
 	if err != nil {
 		log.Errorf("Can not generate token: %s", err)
-		return nil, enums.ErrSystemError
+		return nil, errors.ErrSystemError
 	}
 	return &entities.Authentication{
 		AccessToken: token,
