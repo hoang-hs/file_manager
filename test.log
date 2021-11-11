@@ -1,1 +1,2 @@
-2021-11-11 10:47:32	[INFO]	/home/gumball/go/pkg/mod/github.com/gin-gonic/gin@v1.7.3/gin.go:489	/login	{"status": 200, "method": "POST", "path": "/login", "query": "", "user_agent": "PostmanRuntime/7.28.4"}
+2021-11-11 11:04:09	[ERROR]	/home/gumball/go-module/private/file_manager/internal/services/auth_service.go:34	Can not find user with username: 
+2021-11-11 11:04:09	[INFO]	/home/gumball/go/pkg/mod/github.com/gin-gonic/gin@v1.7.3/gin.go:489	/login	{"status": 401, "method": "POST", "path": "/login", "query": "", "user_agent": "PostmanRuntime/7.28.4"}

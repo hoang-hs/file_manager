@@ -23,18 +23,21 @@ func NewLoginController(appContext *ApplicationContext) *LoginController {
 
 func (o *LoginController) Login(c *gin.Context) {
 	authPackage := entities.AuthPackage{}
-	if err := c.ShouldBindJSON(&authPackage); err != nil {
+	if err := c.BindJSON(&authPackage); err != nil {
 		o.BadRequest(c, err.Error())
 		return
 	}
-	if len(authPackage.Username) == 0 {
-		o.DefaultBadRequest(c)
-		return
-	}
-	if len(authPackage.Password) == 0 {
-		o.DefaultBadRequest(c)
-		return
-	}
+	/*
+		if len(authPackage.Username) == 0 {
+			o.DefaultBadRequest(c)
+			return
+		}
+
+		if len(authPackage.Password) == 0 {
+			o.DefaultBadRequest(c)
+			return
+		}
+	*/
 	authentication, err := o.AppContext.AuthService.Authenticate(authPackage)
 	if err != nil {
 		o.ErrorData(c, err)
