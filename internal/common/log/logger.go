@@ -3,11 +3,20 @@ package log
 import (
 	"file_manager/configs"
 	"file_manager/internal/common/log/hooks"
-	"fmt"
+	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 	"time"
+)
+
+var (
+	logFile    = "./test.log"
+	MaxSize    = 500 // megabytes
+	MaxBackups = 3
+	MaxAge     = 30   //days
+	Compress   = true // disabled by default
 )
 
 const callerSkip = 2
@@ -26,7 +35,6 @@ func CustomLevelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) 
 }
 
 func NewLogger() (Logging, error) {
-
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey:   "message",
 		LevelKey:     "level",
@@ -45,7 +53,7 @@ func NewLogger() (Logging, error) {
 			zapcore.AddSync(os.Stderr), zap.DebugLevel)
 	} else if cf.AppEnv == "prod" {
 		core = zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig),
-			getWriteSyncer("test.log"), zap.InfoLevel)
+			getWriteSyncer(), zap.InfoLevel)
 	}
 
 	options := make([]zap.Option, 0)
@@ -92,8 +100,14 @@ func (l *logger) GetZap() *zap.SugaredLogger {
 	return l.zap
 }
 
-func getWriteSyncer(fileLogName string) zapcore.WriteSyncer {
-	path := fmt.Sprintf("./%s", fileLogName)
-	file, _ := os.Create(path)
-	return zapcore.AddSync(file)
+func getWriteSyncer() zapcore.WriteSyncer {
+	lumberJackLogger := &lumberjack.Logger{
+		Filename:   logFile,
+		MaxSize:    MaxSize,
+		MaxAge:     MaxAge,
+		MaxBackups: MaxBackups,
+		Compress:   Compress,
+	}
+	return zapcore.AddSync(lumberJackLogger)
+
 }
