@@ -10,11 +10,6 @@ import (
 	"time"
 )
 
-const (
-	OutputModeConsole = "console"
-	OutputModeJson    = "json"
-)
-
 const callerSkip = 2
 
 type logger struct {
@@ -31,13 +26,6 @@ func CustomLevelEncoder(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) 
 }
 
 func NewLogger() (Logging, error) {
-	var level zapcore.Level
-	cf := configs.Get()
-	if cf.AppEnv == "dev" {
-		level = zap.DebugLevel
-	} else if cf.AppEnv == "prod" {
-		level = zap.InfoLevel
-	}
 
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey:   "message",
@@ -49,12 +37,16 @@ func NewLogger() (Logging, error) {
 		EncodeLevel:  CustomLevelEncoder,
 	}
 
-	core := zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
-			getWriteSyncer("test.log"), level),
-		zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
-			zapcore.AddSync(os.Stderr), level),
-	)
+	var core zapcore.Core
+	cf := configs.Get()
+
+	if cf.AppEnv == "dev" {
+		core = zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
+			zapcore.AddSync(os.Stderr), zap.DebugLevel)
+	} else if cf.AppEnv == "prod" {
+		core = zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig),
+			getWriteSyncer("test.log"), zap.InfoLevel)
+	}
 
 	options := make([]zap.Option, 0)
 	hookProcessor := hooks.NewHookProcessor(configs.Get().AppEnv)

@@ -38,7 +38,7 @@ func LoadConfigs(mode string) {
 	case "dev":
 		pathConfig = `.env.dev`
 	case "prod":
-		pathConfig = `config/.env.dev`
+		pathConfig = `.env.prod`
 	default:
 		pathConfig = `.env.dev`
 	}
