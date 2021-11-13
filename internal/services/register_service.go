@@ -28,7 +28,7 @@ func NewRegisterService(
 func (r *RegisterService) SignUp(registerPack *entities.RegisterPackage) (*models.User, errors.Error) {
 	user, err := r.validate(registerPack)
 	if err != nil {
-		log.Errorf("error when validate, err:[%v]", err)
+		log.Errorf("user has exist, err:[%v]", err)
 		return nil, err
 	}
 
@@ -43,7 +43,6 @@ func (r *RegisterService) SignUp(registerPack *entities.RegisterPackage) (*model
 func (r *RegisterService) validate(registerPack *entities.RegisterPackage) (*models.User, errors.Error) {
 	user, _ := r.userQueryRepositoryPort.FindByUsername(registerPack.Username)
 	if user != nil {
-		log.Info("username has exist")
 		return nil, errors.NewCustomHttpError(http.StatusConflict, "This username has exist")
 	}
 	password, err := helpers.HashPassword(registerPack.Password)

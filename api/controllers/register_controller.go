@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"file_manager/api/mappers"
+	"file_manager/internal/common/log"
 	"file_manager/internal/entities"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/go-playground/validator/v10"
 )
 
 type RegisterController struct {
@@ -22,12 +23,23 @@ func NewRegisterController(appContext *ApplicationContext) *RegisterController {
 func (o *RegisterController) SignUp(c *gin.Context) {
 	registerPack := entities.RegisterPackage{}
 	if err := c.ShouldBindJSON(&registerPack); err != nil {
-		c.JSON(http.StatusBadRequest, "check request")
+		log.Errorf("bind json fail, err:[%v]", err)
+		o.BadRequest(c, err.Error())
 		return
 	}
-	userModel, err := o.AppContext.RegisterService.SignUp(&registerPack)
+	validate := validator.New()
+	err := validate.Struct(registerPack)
 	if err != nil {
-		o.ErrorData(c, err)
+		for _, err := range err.(validator.ValidationErrors) {
+			log.Errorf("query invalid, err: [%v]", err)
+		}
+		o.DefaultBadRequest(c)
+		return
+	}
+
+	userModel, newErr := o.AppContext.RegisterService.SignUp(&registerPack)
+	if newErr != nil {
+		o.ErrorData(c, newErr)
 		return
 	}
 	resUser := mappers.ConvertUserModelToResource(userModel)

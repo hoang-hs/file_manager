@@ -1,7 +1,7 @@
 package entities
 
 type RegisterPackage struct {
-	FullName string `json:"full_name"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	FullName string `json:"full_name" validate:"required"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
