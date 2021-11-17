@@ -7,6 +7,8 @@ import (
 	"file_manager/internal/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"net/http"
 	"time"
 )
@@ -24,6 +26,16 @@ func NewLoginController(appContext *ApplicationContext) *LoginController {
 }
 
 func (o *LoginController) Login(c *gin.Context) {
+	tracer := opentracing.GlobalTracer()
+	spanCtx, _ := tracer.Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(c.Request.Header),
+	)
+	span := tracer.StartSpan("ping-receive", ext.RPCServerOption(spanCtx))
+	defer span.Finish()
+
+	//ctx := opentracing.ContextWithSpan(context.Background(), span)
+
 	authPackage := entities.AuthPackage{}
 	if err := c.ShouldBindJSON(&authPackage); err != nil {
 		log.Errorf("bind json fail, err:[%v]", err)

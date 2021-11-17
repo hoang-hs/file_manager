@@ -8,6 +8,7 @@ import (
 	"file_manager/configs"
 	"file_manager/internal/common/log"
 	"file_manager/internal/common/notice"
+	"file_manager/jaeger"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -18,6 +19,7 @@ func init() {
 	configs.LoadConfigs(mode)
 	cf := configs.Get()
 	notice.InitNotification(cf.TelegramBotToken, cf.TelegramChatID)
+	jaeger.InitJaeger()
 }
 
 func newGinEngine(logger log.Logging) (*gin.Engine, *gin.RouterGroup) {
