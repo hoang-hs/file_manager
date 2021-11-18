@@ -58,6 +58,11 @@ func main() {
 					}()
 					return nil
 				},
+				OnStop: func(ctx context.Context) error {
+					log.Info("Stopping HTTP server.")
+					return nil
+					//return server.Shutdown(ctx)
+				},
 			})
 		}),
 	).Run()

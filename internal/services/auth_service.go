@@ -2,7 +2,7 @@ package services
 
 import (
 	"file_manager/configs"
-	log "file_manager/internal/common/log"
+	"file_manager/internal/common/log"
 	"file_manager/internal/entities"
 	"file_manager/internal/errors"
 	"file_manager/internal/helpers"
