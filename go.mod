@@ -3,6 +3,7 @@ module file_manager
 go 1.16
 
 require (
+	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.3
@@ -11,9 +12,9 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/opentracing/opentracing-go v1.2.0 // indirect
+	github.com/opentracing/opentracing-go v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/uber/jaeger-client-go v2.29.1+incompatible // indirect
+	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/valyala/fasthttp v1.31.0
 	go.uber.org/fx v1.14.2

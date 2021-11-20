@@ -1,9 +1,6 @@
 package controllers
 
-import (
-	"file_manager/internal/services"
-)
-
+/*
 type ApplicationContext struct {
 	FileService     *services.FileService
 	AuthService     *services.AuthService
@@ -21,3 +18,4 @@ func NewAppLiCationContext(
 		RegisterService: registerService,
 	}
 }
+*/

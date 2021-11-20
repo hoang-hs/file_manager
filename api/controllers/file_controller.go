@@ -3,18 +3,19 @@ package controllers
 import (
 	"file_manager/api/mappers"
 	"file_manager/api/resources"
+	"file_manager/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
 type FileController struct {
-	BaseController
+	*baseController
+	fileService *services.FileService
 }
 
-func NewFileController(appContext *ApplicationContext) *FileController {
+func NewFileController(baseController *baseController, fileService *services.FileService) *FileController {
 	return &FileController{
-		BaseController{
-			AppContext: appContext,
-		},
+		baseController: baseController,
+		fileService:    fileService,
 	}
 }
 
@@ -23,7 +24,7 @@ func (o *FileController) Display(c *gin.Context) {
 	if len(path) == 0 {
 		return
 	}
-	files, err := o.AppContext.FileService.GetFile(path)
+	files, err := o.fileService.GetFile(path)
 	if err != nil {
 		o.ErrorData(c, err)
 		return
@@ -38,7 +39,7 @@ func (o *FileController) UploadFile(c *gin.Context) {
 	if len(path) == 0 {
 		return
 	}
-	err := o.AppContext.FileService.UploadFile(c, path)
+	err := o.fileService.UploadFile(c, path)
 	if err != nil {
 		o.ErrorData(c, err)
 		return
@@ -51,7 +52,7 @@ func (o *FileController) DeleteFile(c *gin.Context) {
 	if len(path) == 0 {
 		return
 	}
-	err := o.AppContext.FileService.DeleteFile(path)
+	err := o.fileService.DeleteFile(path)
 	if err != nil {
 		o.ErrorData(c, err)
 		return

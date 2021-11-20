@@ -38,8 +38,7 @@ func main() {
 
 		bootstrap.LoadServices(),
 
-		fx.Provide(controllers.NewAppLiCationContext),
-
+		fx.Provide(controllers.NewBaseController),
 		fx.Provide(controllers.NewFileController),
 		fx.Provide(controllers.NewRegisterController),
 		fx.Provide(controllers.NewLoginController),
