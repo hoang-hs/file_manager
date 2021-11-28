@@ -47,11 +47,11 @@ func (l *LoginController) Login(c *gin.Context) {
 	}
 
 	http.SetCookie(c.Writer, &http.Cookie{
-		Name:    "token",
+		Name:    "access_token",
 		Value:   authentication.AccessToken,
-		Expires: time.Now().Add(time.Minute * configs.Get().ExpiredDuration),
+		Expires: time.Now().Add(time.Minute * configs.Get().ExpAccessTokenDuration),
 	})
-	c.SetCookie("access_token", authentication.AccessToken, 15, "/", "0.0.0.0", false, true)
+
 	resAuth := mappers.ConvertAuthenticationEntityToResource(authentication)
 	l.Success(c, resAuth)
 }

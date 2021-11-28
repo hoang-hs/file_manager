@@ -40,7 +40,7 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 
 	tokenInfo := entities.AccessTokenInfo{
 		UserId:          user.Id,
-		ExpiredDuration: configs.Get().ExpiredDuration,
+		ExpiredDuration: configs.Get().ExpAccessTokenDuration,
 	}
 	token, err := auth.generateToken(tokenInfo)
 	if err != nil {
