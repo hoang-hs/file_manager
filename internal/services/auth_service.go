@@ -2,11 +2,10 @@ package services
 
 import (
 	"file_manager/configs"
-	log "file_manager/internal/common/log"
+	"file_manager/internal/common/log"
 	"file_manager/internal/entities"
 	"file_manager/internal/errors"
 	"file_manager/internal/helpers"
-	"file_manager/internal/models"
 	"file_manager/internal/ports"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -14,22 +13,18 @@ import (
 )
 
 type AuthService struct {
-	expiredDuration         time.Duration
 	userQueryRepositoryPort ports.UserQueryRepositoryPort
 }
 
 func NewAuthService(userQueryRepositoryPort ports.UserQueryRepositoryPort) *AuthService {
 	return &AuthService{
-		expiredDuration:         configs.Get().ExpiredDuration,
 		userQueryRepositoryPort: userQueryRepositoryPort,
 	}
 }
 
 func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entities.Authentication, errors.Error) {
 	username := authPackage.Username
-	user := &models.User{}
-	var err error
-	user, err = auth.userQueryRepositoryPort.FindByUsername(username)
+	user, err := auth.userQueryRepositoryPort.FindByUsername(username)
 	if err == errors.ErrEntityNotFound {
 		log.Errorf("Can not find user with username: %s", username)
 		return nil, errors.ErrUnAuthenticated
@@ -45,7 +40,7 @@ func (auth *AuthService) Authenticate(authPackage entities.AuthPackage) (*entiti
 
 	tokenInfo := entities.AccessTokenInfo{
 		UserId:          user.Id,
-		ExpiredDuration: auth.expiredDuration,
+		ExpiredDuration: configs.Get().ExpiredDuration,
 	}
 	token, err := auth.generateToken(tokenInfo)
 	if err != nil {

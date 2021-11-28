@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"file_manager/api/mappers"
+	"file_manager/api/services"
 	"file_manager/internal/common/log"
 	"file_manager/internal/entities"
 	"github.com/gin-gonic/gin"
@@ -9,39 +10,38 @@ import (
 )
 
 type RegisterController struct {
-	BaseController
+	*baseController
+	registerService services.IRegisterService
 }
 
-func NewRegisterController(appContext *ApplicationContext) *RegisterController {
+func NewRegisterController(baseController *baseController, registerService services.IRegisterService) *RegisterController {
 	return &RegisterController{
-		BaseController{
-			AppContext: appContext,
-		},
+		baseController:  baseController,
+		registerService: registerService,
 	}
 }
 
-func (o *RegisterController) SignUp(c *gin.Context) {
+func (r *RegisterController) SignUp(c *gin.Context) {
 	registerPack := entities.RegisterPackage{}
 	if err := c.ShouldBindJSON(&registerPack); err != nil {
 		log.Errorf("bind json fail, err:[%v]", err)
-		o.BadRequest(c, err.Error())
+		r.BadRequest(c, err.Error())
 		return
 	}
-	validate := validator.New()
-	err := validate.Struct(registerPack)
+	err := validator.New().Struct(registerPack)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			log.Errorf("query invalid, err: [%v]", err)
 		}
-		o.DefaultBadRequest(c)
+		r.DefaultBadRequest(c)
 		return
 	}
 
-	userModel, newErr := o.AppContext.RegisterService.SignUp(&registerPack)
+	userModel, newErr := r.registerService.SignUp(&registerPack)
 	if newErr != nil {
-		o.ErrorData(c, newErr)
+		r.ErrorData(c, newErr)
 		return
 	}
 	resUser := mappers.ConvertUserModelToResource(userModel)
-	o.Success(c, resUser)
+	r.Success(c, resUser)
 }

@@ -45,17 +45,21 @@ func NewLogger() (Logging, error) {
 		EncodeLevel:  CustomLevelEncoder,
 	}
 
-	var core zapcore.Core
+	var encoder zapcore.Encoder
+	var writeSyncer zapcore.WriteSyncer
+	var level zapcore.Level
 	cf := configs.Get()
 
 	if cf.AppEnv == "dev" {
-		core = zapcore.NewCore(zapcore.NewConsoleEncoder(encoderConfig),
-			zapcore.AddSync(os.Stderr), zap.DebugLevel)
+		encoder = zapcore.NewConsoleEncoder(encoderConfig)
+		writeSyncer = zapcore.AddSync(os.Stderr)
+		level = zap.DebugLevel
 	} else if cf.AppEnv == "prod" {
-		core = zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig),
-			getWriteSyncer(), zap.InfoLevel)
+		encoder = zapcore.NewJSONEncoder(encoderConfig)
+		writeSyncer = getWriteSyncer()
+		level = zap.InfoLevel
 	}
-
+	core := zapcore.NewCore(encoder, writeSyncer, level)
 	options := make([]zap.Option, 0)
 	hookProcessor := hooks.NewHookProcessor(configs.Get().AppEnv)
 	hook := zap.Hooks(func(entry zapcore.Entry) error {

@@ -1,32 +1,29 @@
 package configs
 
-import (
-	"github.com/spf13/viper"
-	"time"
-)
+import "time"
 
 type Config struct {
-	AppEnv string `mapstructure:"MODE"`
+	AppEnv string
 
-	ServerAddress string `mapstructure:"SERVER_ADDR"`
+	ServerAddress string
 
-	DbDriver   string `mapstructure:"DB_DRIVER"`
-	DbUser     string `mapstructure:"DB_USER"`
-	DbPassword string `mapstructure:"DB_PASS"`
-	DbPort     string `mapstructure:"DB_PORT"`
-	DbHost     string `mapstructure:"DB_HOST"`
-	DbName     string `mapstructure:"DB_NAME"`
+	DbDriver   string
+	DbUser     string
+	DbPassword string
+	DbPort     string
+	DbHost     string
+	DbName     string
 
-	SecretKey string `mapstructure:"SECRET_KEY"`
+	SecretKey string
 
-	Root string `mapstructure:"ROOT"`
+	Root string
 
-	ExpiredDuration time.Duration `mapstructure:"EXPIRED_DURATION"`
+	ExpiredDuration time.Duration
 
-	ExpCacheTimeDb time.Duration `mapstructure:"CACHE_TIME_DB"`
+	ExpCacheTimeDb time.Duration
 
-	TelegramBotToken string `mapstructure:"FILE_MANAGER_TELEGRAM_BOT_TOKEN"`
-	TelegramChatID   string `mapstructure:"FILE_MANAGER_TELEGRAM_CHAT_ID"`
+	TelegramBotToken string
+	TelegramChatID   string
 }
 
 var Common *Config
@@ -36,69 +33,37 @@ func Get() *Config {
 }
 
 func LoadConfigs(mode string) {
-	viper.SetConfigType("env")
-	//viper.AddConfigPath("")
-	viper.SetConfigFile(".env.dev")
-
-	//var configName string
-	// load env from cmd
-	viper.AutomaticEnv()
-
-	if mode == "dev" {
-		//	configName = "dev"
-	} else if mode == "prod" {
-		//	configName = "prod"
-	} else {
-		//	configName = "dev"
+	var pathConfig string
+	switch mode {
+	case "dev":
+		pathConfig = `.env.dev`
+	case "prod":
+		pathConfig = `.env.prod`
+	default:
+		pathConfig = `.env.dev`
 	}
-	//viper.SetConfigName("")
+	LoadEnv(pathConfig)
+	Common = &Config{
+		AppEnv: mode,
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
+		ServerAddress: getStringD("SERVER_ADDR", "0.0.0.0:8080"),
+
+		DbDriver:   getString("DB_DRIVER"),
+		DbUser:     getString("DB_USER"),
+		DbPassword: getString("DB_PASSWORD"),
+		DbPort:     getString("DB_PORT"),
+		DbHost:     getString("DB_HOST"),
+		DbName:     getString("DB_NAME"),
+
+		SecretKey: getString("SECRET_KEY"),
+
+		Root: getStringD("ROOT", "/home/gumball/"),
+
+		ExpiredDuration: getTimeDurationWithDefault("EXPIRED_DURATION", 15),
+
+		ExpCacheTimeDb: getTimeDurationWithDefault("CACHE_TIME_DB", 60),
+
+		TelegramBotToken: getString("FILE_MANAGER_TELEGRAM_BOT_TOKEN"),
+		TelegramChatID:   getString("FILE_MANAGER_TELEGRAM_CHAT_ID"),
 	}
-
-	err = viper.Unmarshal(&Common)
-	if err != nil {
-		panic(err)
-	}
-	//viper.SetDefault("SERVER_ADDR", "0.0.0.0:8080")
-	Common.ExpCacheTimeDb *= time.Minute
-	Common.ExpiredDuration *= time.Minute
-	return
-	/*
-		var pathConfig string
-		switch mode {
-		case "dev":
-			pathConfig = `.env.dev`
-		case "prod":
-			pathConfig = `.env.prod`
-		default:
-			pathConfig = `.env.dev`
-		}
-		LoadEnv(pathConfig)
-		Common = &Config{
-			AppEnv: mode,
-
-			ServerAddress: getStringD("SERVER_ADDR", "0.0.0.0:8080"),
-
-			DbDriver:   getString("DB_DRIVER"),
-			DbUser:     getString("DB_USER"),
-			DbPassword: getString("DB_PASS"),
-			DbPort:     getString("DB_PORT"),
-			DbHost:     getString("DB_HOST"),
-			DbName:     getString("DB_NAME"),
-
-			SecretKey: getString("SECRET_KEY"),
-
-			Root: getStringD("ROOT", "/home/gumball/"),
-
-			ExpiredDuration: getTimeDurationWithDefault("EXPIRED_DURATION", 15),
-
-			ExpCacheTimeDb: getTimeDurationWithDefault("CACHE_TIME_DB", 60),
-
-			TelegramBotToken: getString("FILE_MANAGER_TELEGRAM_BOT_TOKEN"),
-			TelegramChatID:   getString("FILE_MANAGER_TELEGRAM_CHAT_ID"),
-		}
-	*/
 }

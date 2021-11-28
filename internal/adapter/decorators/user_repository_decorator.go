@@ -22,13 +22,13 @@ type UserRepositoryDecorator struct {
 func NewUserRepositoryDecorator(
 	cache caching.CacheStrategy,
 	userRepository *repositories.UserQueryRepository,
-	env string,
 ) *UserRepositoryDecorator {
+	cf := configs.Get()
 	return &UserRepositoryDecorator{
 		cache:          cache,
 		userRepository: userRepository,
-		expCacheTime:   configs.Get().ExpCacheTimeDb,
-		setKeyEnv:      fmt.Sprintf("%s_%s", enums.DefaultSetKeyDB, env),
+		expCacheTime:   cf.ExpCacheTimeDb,
+		setKeyEnv:      fmt.Sprintf("%s_%s", enums.DefaultSetKeyDB, cf.AppEnv),
 	}
 }
 

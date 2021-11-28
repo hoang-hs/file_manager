@@ -3,59 +3,80 @@ package controllers
 import (
 	"file_manager/api/mappers"
 	"file_manager/api/resources"
+	"file_manager/api/services"
+	"file_manager/configs"
+	"file_manager/internal/common/log"
 	"github.com/gin-gonic/gin"
 )
 
 type FileController struct {
-	BaseController
+	*baseController
+	fileService services.IFileService
 }
 
-func NewFileController(appContext *ApplicationContext) *FileController {
+func NewFileController(baseController *baseController, fileService services.IFileService) *FileController {
 	return &FileController{
-		BaseController{
-			AppContext: appContext,
-		},
+		baseController: baseController,
+		fileService:    fileService,
 	}
 }
 
-func (o *FileController) Display(c *gin.Context) {
-	path := o.GetQuery(c)
+func (f *FileController) Display(c *gin.Context) {
+	path := f.GetQuery(c)
 	if len(path) == 0 {
 		return
 	}
-	files, err := o.AppContext.FileService.GetFile(path)
+	files, err := f.fileService.GetFile(path)
 	if err != nil {
-		o.ErrorData(c, err)
+		f.ErrorData(c, err)
 		return
 	}
 	data := mappers.ConvertDirEntitiesToResource(files)
-	o.Success(c, data)
+	f.Success(c, data)
 
 }
 
-func (o *FileController) UploadFile(c *gin.Context) {
-	path := o.GetQuery(c)
+func (f *FileController) UploadFile(c *gin.Context) {
+	path := f.GetQuery(c)
 	if len(path) == 0 {
 		return
 	}
-	err := o.AppContext.FileService.UploadFile(c, path)
+	err := f.fileService.UploadFile(c, path)
 	if err != nil {
-		o.ErrorData(c, err)
+		f.ErrorData(c, err)
 		return
 	}
-	o.Success(c, resources.NewMessageResource("upload file successfully "))
+	f.Success(c, resources.NewMessageResource("upload file successfully "))
 }
 
-func (o *FileController) DeleteFile(c *gin.Context) {
-	path := o.GetQuery(c)
+func (f *FileController) DeleteFile(c *gin.Context) {
+	path := f.GetQuery(c)
 	if len(path) == 0 {
 		return
 	}
-	err := o.AppContext.FileService.DeleteFile(path)
+	err := f.fileService.DeleteFile(path)
 	if err != nil {
-		o.ErrorData(c, err)
+		f.ErrorData(c, err)
 		return
 	}
-	o.Success(c, resources.NewMessageResource("delete file successfully "))
+	f.Success(c, resources.NewMessageResource("delete file successfully "))
+}
 
+func (f *FileController) GetQuery(c *gin.Context) string {
+	var query struct {
+		Path string `form:"path"`
+	}
+	err := c.ShouldBindQuery(&query)
+	if err != nil {
+		log.Errorf("bind query fail, err %s", err)
+		f.DefaultBadRequest(c)
+		return ""
+	}
+	if len(query.Path) == 0 {
+		log.Errorf("path is nil")
+		f.DefaultBadRequest(c)
+		return ""
+	}
+	query.Path = configs.Get().Root + query.Path
+	return query.Path
 }
