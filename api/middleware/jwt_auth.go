@@ -22,14 +22,15 @@ func RequiredJwtAuthentication() gin.HandlerFunc {
 }
 
 func verifyToken(c *gin.Context) errors.Error {
-	cookieToken, err := c.Request.Cookie("token")
+	cookieToken, err := c.Request.Cookie("access_token")
 	if err != nil {
 		if err == http.ErrNoCookie {
 			log.Errorf("cookie token is empty, err:[%v]", err)
 			return errors.NewCustomHttpError(http.StatusUnauthorized, "cookie token empty")
+		} else {
+			log.Errorf("get token fail, err:[%v]", err)
+			return errors.NewCustomSystemError("get token fail")
 		}
-		log.Error("get token fail, err:[%v]", err)
-		return errors.NewCustomSystemError("get token fail")
 	}
 
 	tokenStr := cookieToken.Value
@@ -41,10 +42,9 @@ func verifyToken(c *gin.Context) errors.Error {
 
 	claims := jwt.MapClaims{}
 
-	tkn, err := jwt.ParseWithClaims(tokenStr, claims,
-		func(t *jwt.Token) (interface{}, error) {
-			return privateKey, nil
-		})
+	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+		return privateKey, nil
+	})
 
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {

@@ -1,4 +1,4 @@
-package bootstrap
+package database
 
 import (
 	"database/sql"
@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func newConnection(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName string) *sql.DB {
+func NewConnection(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName string) *sql.DB {
 	DbUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
 	conn, err := sql.Open(dbDriver, DbUrl)
 	if err != nil {

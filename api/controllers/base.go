@@ -2,15 +2,12 @@ package controllers
 
 import (
 	"file_manager/api/resources"
-	"file_manager/configs"
-	"file_manager/internal/common/log"
 	"file_manager/internal/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type baseController struct {
-	//AppContext *ApplicationContext
 }
 
 func NewBaseController() *baseController {
@@ -49,23 +46,4 @@ func (b *baseController) InternetServerError(c *gin.Context) {
 
 func (b *baseController) Unauthorized(c *gin.Context) {
 	b.Error(c, http.StatusUnauthorized, "Unauthorized")
-}
-
-func (b *baseController) GetQuery(c *gin.Context) string {
-	var query struct {
-		Path string `form:"path"`
-	}
-	err := c.ShouldBindQuery(&query)
-	if err != nil {
-		log.Errorf("bind query fail, err %s", err)
-		b.DefaultBadRequest(c)
-		return ""
-	}
-	if len(query.Path) == 0 {
-		log.Errorf("path is nil")
-		b.DefaultBadRequest(c)
-		return ""
-	}
-	query.Path = configs.Get().Root + query.Path
-	return query.Path
 }

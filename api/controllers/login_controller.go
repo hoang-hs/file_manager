@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"file_manager/api/mappers"
+	"file_manager/api/services"
 	"file_manager/configs"
 	"file_manager/internal/common/log"
 	"file_manager/internal/entities"
-	"file_manager/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"net/http"
@@ -14,36 +14,35 @@ import (
 
 type LoginController struct {
 	*baseController
-	authService *services.AuthService
+	authService services.IAuthService
 }
 
-func NewLoginController(baseController *baseController, authService *services.AuthService) *LoginController {
+func NewLoginController(baseController *baseController, authService services.IAuthService) *LoginController {
 	return &LoginController{
 		baseController: baseController,
 		authService:    authService,
 	}
 }
 
-func (o *LoginController) Login(c *gin.Context) {
+func (l *LoginController) Login(c *gin.Context) {
 	authPackage := entities.AuthPackage{}
 	if err := c.ShouldBindJSON(&authPackage); err != nil {
 		log.Errorf("bind json fail, err:[%v]", err)
-		o.BadRequest(c, err.Error())
+		l.BadRequest(c, err.Error())
 		return
 	}
-	validate := validator.New()
-	err := validate.Struct(authPackage)
+	err := validator.New().Struct(authPackage)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			log.Errorf("query invalid, err: [%v]", err)
 		}
-		o.DefaultBadRequest(c)
+		l.DefaultBadRequest(c)
 		return
 	}
 
-	authentication, newErr := o.authService.Authenticate(authPackage)
+	authentication, newErr := l.authService.Authenticate(authPackage)
 	if newErr != nil {
-		o.ErrorData(c, newErr)
+		l.ErrorData(c, newErr)
 		return
 	}
 
@@ -52,7 +51,7 @@ func (o *LoginController) Login(c *gin.Context) {
 		Value:   authentication.AccessToken,
 		Expires: time.Now().Add(time.Minute * configs.Get().ExpiredDuration),
 	})
-
+	c.SetCookie("access_token", authentication.AccessToken, 15, "/", "0.0.0.0", false, true)
 	resAuth := mappers.ConvertAuthenticationEntityToResource(authentication)
-	o.Success(c, resAuth)
+	l.Success(c, resAuth)
 }
