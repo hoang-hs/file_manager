@@ -1,11 +1,11 @@
 package mappers
 
 import (
-	"file_manager/src/adapter/database/models"
 	"file_manager/src/api/resources"
+	"file_manager/src/core/entities"
 )
 
-func ConvertUserModelToResource(user *models.User) *resources.User {
+func ConvertUserEntityToResource(user *entities.User) *resources.User {
 	return &resources.User{
 		Id:       user.Id,
 		FullName: user.FullName,

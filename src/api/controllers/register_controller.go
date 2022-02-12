@@ -22,13 +22,13 @@ func NewRegisterController(baseController *baseController, registerService servi
 }
 
 func (r *RegisterController) SignUp(c *gin.Context) {
-	registerPack := request.RegisterPackage{}
-	if err := c.ShouldBindJSON(&registerPack); err != nil {
+	registerRequest := request.RegisterRequest{}
+	if err := c.ShouldBindJSON(&registerRequest); err != nil {
 		log.Errorf("bind json fail, err:[%v]", err)
 		r.BadRequest(c, err.Error())
 		return
 	}
-	err := validator.New().Struct(registerPack)
+	err := validator.New().Struct(registerRequest)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			log.Errorf("query invalid, err: [%v]", err)
@@ -37,11 +37,11 @@ func (r *RegisterController) SignUp(c *gin.Context) {
 		return
 	}
 
-	userModel, newErr := r.registerService.SignUp(&registerPack)
+	user, newErr := r.registerService.SignUp(&registerRequest)
 	if newErr != nil {
 		r.ErrorData(c, newErr)
 		return
 	}
-	resUser := mappers.ConvertUserModelToResource(userModel)
+	resUser := mappers.ConvertUserEntityToResource(user)
 	r.Success(c, resUser)
 }

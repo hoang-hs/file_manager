@@ -23,8 +23,8 @@ func NewAuthService(userQueryRepositoryPort ports.UserQueryRepositoryPort) *Auth
 	}
 }
 
-func (auth *AuthService) Authenticate(authPackage request.AuthPackage) (*request.Authentication, errors.Error) {
-	username := authPackage.Username
+func (auth *AuthService) Authenticate(authRequest *request.AuthRequest) (*entities.Authentication, errors.Error) {
+	username := authRequest.Username
 	user, err := auth.userQueryRepositoryPort.FindByUsername(username)
 	if err == errors.ErrEntityNotFound {
 		log.Errorf("Can not find user with username: %s", username)
@@ -34,7 +34,7 @@ func (auth *AuthService) Authenticate(authPackage request.AuthPackage) (*request
 		log.Errorf("Error when query to database: %s", err)
 		return nil, errors.ErrSystemError
 	}
-	if !auth.validatePassword(user.Password, authPackage.Password) {
+	if !auth.validatePassword(user.Password, authRequest.Password) {
 		log.Errorf("Fail when validate password for username: %s", user.Username)
 		return nil, errors.ErrUnAuthenticated
 	}
@@ -48,7 +48,8 @@ func (auth *AuthService) Authenticate(authPackage request.AuthPackage) (*request
 		log.Errorf("Can not generate token: %s", err)
 		return nil, errors.ErrSystemError
 	}
-	return &request.Authentication{
+
+	return &entities.Authentication{
 		AccessToken: token,
 		User:        user,
 	}, nil

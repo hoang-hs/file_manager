@@ -1,12 +1,12 @@
 package mappers
 
 import (
-	"file_manager/src/api/request"
 	"file_manager/src/api/resources"
+	"file_manager/src/core/entities"
 )
 
-func ConvertAuthenticationEntityToResource(authentication *request.Authentication) *resources.Authentication {
-	userRes := ConvertUserModelToResource(authentication.User)
+func ConvertAuthenticationEntityToResource(authentication *entities.Authentication) *resources.Authentication {
+	userRes := ConvertUserEntityToResource(authentication.User)
 	return &resources.Authentication{
 		AccessToken: authentication.AccessToken,
 		User:        userRes,

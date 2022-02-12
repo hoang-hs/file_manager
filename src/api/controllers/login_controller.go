@@ -25,13 +25,13 @@ func NewLoginController(baseController *baseController, authService services.Aut
 }
 
 func (l *LoginController) Login(c *gin.Context) {
-	authPackage := request.AuthPackage{}
-	if err := c.ShouldBindJSON(&authPackage); err != nil {
+	authRequest := request.AuthRequest{}
+	if err := c.ShouldBindJSON(&authRequest); err != nil {
 		log.Errorf("bind json fail, err:[%v]", err)
 		l.BadRequest(c, err.Error())
 		return
 	}
-	err := validator.New().Struct(authPackage)
+	err := validator.New().Struct(authRequest)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			log.Errorf("query invalid, err: [%v]", err)
@@ -40,7 +40,7 @@ func (l *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	authentication, newErr := l.authService.Authenticate(authPackage)
+	authentication, newErr := l.authService.Authenticate(&authRequest)
 	if newErr != nil {
 		l.ErrorData(c, newErr)
 		return
@@ -52,6 +52,7 @@ func (l *LoginController) Login(c *gin.Context) {
 		Expires: time.Now().Add(time.Minute * configs.Get().ExpiredDuration),
 	})
 	c.SetCookie("access_token", authentication.AccessToken, 15, "/", "0.0.0.0", false, true)
+
 	resAuth := mappers.ConvertAuthenticationEntityToResource(authentication)
 	l.Success(c, resAuth)
 }

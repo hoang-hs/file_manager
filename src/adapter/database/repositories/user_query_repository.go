@@ -2,8 +2,10 @@ package repositories
 
 import (
 	"database/sql"
+	"file_manager/src/adapter/database/mappers"
 	"file_manager/src/adapter/database/models"
 	"file_manager/src/common/log"
+	"file_manager/src/core/entities"
 	"file_manager/src/core/errors"
 )
 
@@ -17,7 +19,7 @@ func NewUserQueryRepository(baseRepository *baseRepository) *UserQueryRepository
 	}
 }
 
-func (q *UserQueryRepository) FindByUsername(username string) (*models.User, error) {
+func (q *UserQueryRepository) FindByUsername(username string) (*entities.User, error) {
 	user := &models.User{}
 	stmt, err := q.db.Prepare(`SELECT ID, FULL_NAME, USER_NAME, PASSWORD FROM USERS_CTRL WHERE USER_NAME = ?`)
 	if err != nil {
@@ -35,5 +37,5 @@ func (q *UserQueryRepository) FindByUsername(username string) (*models.User, err
 	case err != nil:
 		return nil, err
 	}
-	return user, nil
+	return mappers.ConvertUserModelToEntity(user), nil
 }

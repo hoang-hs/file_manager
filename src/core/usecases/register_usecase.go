@@ -1,9 +1,9 @@
 package usecases
 
 import (
-	models2 "file_manager/src/adapter/database/models"
 	"file_manager/src/api/request"
 	"file_manager/src/common/log"
+	"file_manager/src/core/entities"
 	"file_manager/src/core/errors"
 	"file_manager/src/core/ports"
 	"file_manager/src/helpers"
@@ -25,34 +25,34 @@ func NewRegisterService(
 	}
 }
 
-func (r *RegisterService) SignUp(registerPack *request.RegisterPackage) (*models2.User, errors.Error) {
-	user, err := r.validate(registerPack)
+func (r *RegisterService) SignUp(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
+	user, err := r.validate(registerRequest)
 	if err != nil {
 		log.Errorf("user has exist, err:[%v]", err)
 		return nil, err
 	}
 
-	modelUser, newErr := r.userCommandRepositoryPort.Insert(user)
+	newErr := r.userCommandRepositoryPort.Insert(user)
 	if newErr != nil {
 		log.Errorf("error when insert, err: [%v]", err)
 		return nil, errors.ErrSystemError
 	}
-	return modelUser, nil
+	return user, nil
 }
 
-func (r *RegisterService) validate(registerPack *request.RegisterPackage) (*models2.User, errors.Error) {
-	user, _ := r.userQueryRepositoryPort.FindByUsername(registerPack.Username)
+func (r *RegisterService) validate(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
+	user, _ := r.userQueryRepositoryPort.FindByUsername(registerRequest.Username)
 	if user != nil {
 		return nil, errors.NewCustomHttpError(http.StatusConflict, "This username has exist")
 	}
-	password, err := helpers.HashPassword(registerPack.Password)
+	password, err := helpers.HashPassword(registerRequest.Password)
 	if err != nil {
 		return nil, errors.ErrSystemError
 	}
 
-	user = &models2.User{
-		FullName: registerPack.FullName,
-		Username: registerPack.Username,
+	user = &entities.User{
+		FullName: registerRequest.FullName,
+		Username: registerRequest.Username,
 		Password: password,
 	}
 	return user, nil

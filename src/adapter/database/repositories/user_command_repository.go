@@ -1,8 +1,9 @@
 package repositories
 
 import (
-	"file_manager/src/adapter/database/models"
+	"file_manager/src/adapter/database/mappers"
 	"file_manager/src/common/log"
+	"file_manager/src/core/entities"
 	"github.com/google/uuid"
 )
 
@@ -16,29 +17,30 @@ func NewUserCommandRepository(baseRepository *baseRepository) *UserCommandReposi
 	}
 }
 
-func (u *UserCommandRepository) Insert(user *models.User) (*models.User, error) {
+func (u *UserCommandRepository) Insert(user *entities.User) error {
+	userModel := mappers.ConvertUserEntityToModel(user)
 	tx, err := u.db.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	user.Id = uuid.New().String()
+	userModel.Id = uuid.New().String()
 
 	stmt, newRrr := tx.Prepare(`INSERT INTO USERS_CTRL (ID, FULL_NAME, USER_NAME, PASSWORD)
 								VALUES(?, ?, ?, ?)`)
 	if newRrr != nil {
 		_ = tx.Rollback()
-		return nil, err
+		return err
 	}
 	defer func() {
 		if err := stmt.Close(); err != nil {
 			log.Fatalf("cannot close stmt, err:[%v]", err)
 		}
 	}()
-	_, err = stmt.Exec(user.Id, user.FullName, user.Username, user.Password)
+	_, err = stmt.Exec(userModel.Id, userModel.FullName, userModel.Username, userModel.Password)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, err
+		return err
 	}
 	err = tx.Commit()
-	return user, nil
+	return nil
 }
