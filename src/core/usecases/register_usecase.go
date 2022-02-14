@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-type RegisterService struct {
+type RegisterUseCase struct {
 	userQueryRepositoryPort   ports.UserQueryRepositoryPort
 	userCommandRepositoryPort ports.UserCommandRepositoryPort
 }
@@ -18,14 +18,14 @@ type RegisterService struct {
 func NewRegisterService(
 	userQueryRepositoryPort ports.UserQueryRepositoryPort,
 	userCommandRepositoryPort ports.UserCommandRepositoryPort,
-) *RegisterService {
-	return &RegisterService{
+) *RegisterUseCase {
+	return &RegisterUseCase{
 		userQueryRepositoryPort:   userQueryRepositoryPort,
 		userCommandRepositoryPort: userCommandRepositoryPort,
 	}
 }
 
-func (r *RegisterService) SignUp(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
+func (r *RegisterUseCase) SignUp(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
 	user, err := r.validate(registerRequest)
 	if err != nil {
 		log.Errorf("user has exist, err:[%v]", err)
@@ -40,7 +40,7 @@ func (r *RegisterService) SignUp(registerRequest *request.RegisterRequest) (*ent
 	return user, nil
 }
 
-func (r *RegisterService) validate(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
+func (r *RegisterUseCase) validate(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
 	user, _ := r.userQueryRepositoryPort.FindByUsername(registerRequest.Username)
 	if user != nil {
 		return nil, errors.NewCustomHttpError(http.StatusConflict, "This username has exist")

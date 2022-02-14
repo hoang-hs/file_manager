@@ -22,8 +22,19 @@ func init() {
 }
 
 func main() {
+	cf := configs.Get()
 	fx.New(
-		fx.Options(bootstrap.All()...),
+		fx.Supply(cf),
+		fx.Provide(log.NewLogger),
+		fx.Invoke(log.RegisterGlobal),
+		fx.Options(bootstrap.LoadRepositories(cf)...),
+		fx.Options(bootstrap.LoadUseCases()...),
+		fx.Options(bootstrap.LoadControllers()...),
+		fx.Options(bootstrap.LoadEngine()...),
+
+		fx.Options(bootstrap.LoadGraphite(cf)...),
+		fx.Options(bootstrap.LoadListeners()...),
+		//fx.Options(bootstrap.All()...),
 		fx.Invoke(func(lc fx.Lifecycle, engine *gin.Engine) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

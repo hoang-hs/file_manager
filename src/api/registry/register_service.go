@@ -5,6 +5,6 @@ import (
 	"file_manager/src/core/usecases"
 )
 
-func NewRegisterService(registerServiceImpl *usecases.RegisterService) services.RegisterService {
+func NewRegisterService(registerServiceImpl *usecases.RegisterUseCase) services.RegisterService {
 	return registerServiceImpl
 }

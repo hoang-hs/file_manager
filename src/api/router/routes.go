@@ -1,4 +1,4 @@
-package api
+package router
 
 import (
 	"file_manager/src/api/controllers"

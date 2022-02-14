@@ -13,19 +13,19 @@ import (
 	"time"
 )
 
-type AuthService struct {
+type AuthUseCase struct {
 	userQueryRepositoryPort ports.UserQueryRepositoryPort
 }
 
-func NewAuthService(userQueryRepositoryPort ports.UserQueryRepositoryPort) *AuthService {
-	return &AuthService{
+func NewAuthUseCase(userQueryRepositoryPort ports.UserQueryRepositoryPort) *AuthUseCase {
+	return &AuthUseCase{
 		userQueryRepositoryPort: userQueryRepositoryPort,
 	}
 }
 
-func (auth *AuthService) Authenticate(authRequest *request.AuthRequest) (*entities.Authentication, errors.Error) {
+func (a *AuthUseCase) Authenticate(authRequest *request.AuthRequest) (*entities.Authentication, errors.Error) {
 	username := authRequest.Username
-	user, err := auth.userQueryRepositoryPort.FindByUsername(username)
+	user, err := a.userQueryRepositoryPort.FindByUsername(username)
 	if err == errors.ErrEntityNotFound {
 		log.Errorf("Can not find user with username: %s", username)
 		return nil, errors.ErrUnAuthenticated
@@ -34,7 +34,7 @@ func (auth *AuthService) Authenticate(authRequest *request.AuthRequest) (*entiti
 		log.Errorf("Error when query to database: %s", err)
 		return nil, errors.ErrSystemError
 	}
-	if !auth.validatePassword(user.Password, authRequest.Password) {
+	if !a.validatePassword(user.Password, authRequest.Password) {
 		log.Errorf("Fail when validate password for username: %s", user.Username)
 		return nil, errors.ErrUnAuthenticated
 	}
@@ -43,7 +43,7 @@ func (auth *AuthService) Authenticate(authRequest *request.AuthRequest) (*entiti
 		UserId:          user.Id,
 		ExpiredDuration: configs.Get().ExpiredDuration,
 	}
-	token, err := auth.generateToken(tokenInfo)
+	token, err := a.generateToken(tokenInfo)
 	if err != nil {
 		log.Errorf("Can not generate token: %s", err)
 		return nil, errors.ErrSystemError
@@ -55,12 +55,12 @@ func (auth *AuthService) Authenticate(authRequest *request.AuthRequest) (*entiti
 	}, nil
 }
 
-func (auth *AuthService) validatePassword(hashPassword, password string) bool {
+func (a *AuthUseCase) validatePassword(hashPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password))
 	return err == nil
 }
 
-func (auth *AuthService) generateToken(tokenInfo entities.AccessTokenInfo) (string, error) {
+func (a *AuthUseCase) generateToken(tokenInfo entities.AccessTokenInfo) (string, error) {
 	privateKey, err := helpers.GetPrivateKey()
 	if err != nil {
 		log.Errorf("parse private key error, err:[%v]", err)

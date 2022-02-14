@@ -5,6 +5,6 @@ import (
 	"file_manager/src/core/usecases"
 )
 
-func NewFileService(fileServiceImpl *usecases.FileService) services.FileService {
+func NewFileService(fileServiceImpl *usecases.FileUseCase) services.FileService {
 	return fileServiceImpl
 }

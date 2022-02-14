@@ -9,14 +9,14 @@ import (
 	"os"
 )
 
-type FileService struct {
+type FileUseCase struct {
 }
 
-func NewFileService() *FileService {
-	return &FileService{}
+func NewFileUseCase() *FileUseCase {
+	return &FileUseCase{}
 }
 
-func (f *FileService) GetFile(path string) (*entities.Files, errors.Error) {
+func (f *FileUseCase) GetFile(path string) (*entities.Files, errors.Error) {
 	files, err := os.Open(path)
 	if err != nil {
 		log.Errorf("cannot open dir,err: [%v]", err)
@@ -42,21 +42,21 @@ func (f *FileService) GetFile(path string) (*entities.Files, errors.Error) {
 	return listDir, nil
 }
 
-func (f *FileService) UploadFile(c *gin.Context, path string) errors.Error {
+func (f *FileUseCase) UploadFile(c *gin.Context, path string) errors.Error {
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Errorf("cannot get file from form file, err: [%v]", err)
 		return errors.NewCustomHttpError(http.StatusBadRequest, "form file invalid")
 	}
 	path = path + "/"
-	if err := c.SaveUploadedFile(file, path+file.Filename); err != nil {
+	if err = c.SaveUploadedFile(file, path+file.Filename); err != nil {
 		log.Errorf("cannot save file, err: [%v]", err)
 		return errors.NewCustomHttpError(http.StatusBadRequest, "query wrong")
 	}
 	return nil
 }
 
-func (f *FileService) DeleteFile(path string) errors.Error {
+func (f *FileUseCase) DeleteFile(path string) errors.Error {
 	err := os.RemoveAll(path)
 	if err != nil {
 		log.Errorf("cannot remove file, err: [%v]", err)

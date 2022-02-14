@@ -9,6 +9,12 @@ import (
 func getString(key string) string {
 	return os.Getenv(key)
 }
+
+func getInt(key string) int {
+	value := os.Getenv(key)
+	valueInt, _ := strconv.Atoi(value)
+	return valueInt
+}
 func getStringD(key string, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {

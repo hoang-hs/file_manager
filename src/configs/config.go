@@ -14,6 +14,9 @@ type Config struct {
 	DbHost     string
 	DbName     string
 
+	GraphiteHost string
+	GraphitePort int
+
 	SecretKey string
 
 	Root string
@@ -54,6 +57,9 @@ func LoadConfigs(mode string) {
 		DbPort:     getString("DB_PORT"),
 		DbHost:     getString("DB_HOST"),
 		DbName:     getString("DB_NAME"),
+
+		GraphiteHost: getString("GRAPHITE_HOST"),
+		GraphitePort: getInt("GRAPHITE_PORT"),
 
 		SecretKey: getString("SECRET_KEY"),
 
