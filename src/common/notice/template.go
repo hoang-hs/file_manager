@@ -1,15 +1,13 @@
 package notice
 
 type Template struct {
-	Job       string
-	Message   string
-	ParseMode string
+	Job     string
+	Message string
 }
 
-func NewTemplate(job, message, mode string) Template {
+func NewTemplate(job, message string) Template {
 	return Template{
-		Job:       job,
-		Message:   message,
-		ParseMode: mode,
+		Job:     job,
+		Message: message,
 	}
 }

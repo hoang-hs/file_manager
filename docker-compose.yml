@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    container_name: mysql-db
+    ports:
+      - target: 3306
+    environment:
+      DB_USER = "${DB_USER}"
+      DB_PASS = "${DB_PASS}"
+      DB_PORT = "${DB_PORT}"
+      DB_HOST = "${DB_HOST}"
+      DB_NAME = "${DB_NAME}"
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - file-manager-network
+
+  app:
+    build: .
+    container_name: "file-manager"
+    environment:
+      DB_DRIVER = "${DB_DRIVER}"
+      DB_USER = "${DB_USER}"
+      DB_PASS = "${DB_PASS}"
+      DB_PORT = "${DB_PORT}"
+      DB_HOST = "${DB_HOST}"
+      DB_NAME = "${DB_NAME}"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - file-manager-network
+
+volumes:
+  db:
+networks:
+  file-manager-network:
+    driver: bridge

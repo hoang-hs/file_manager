@@ -13,9 +13,18 @@ type Latency struct {
 	Mean                   float64 `json:"mean"`
 }
 
+func NewLatency() *Latency {
+	return &Latency{
+		LastMinuteRequestTimes: make([]float64, 0),
+		lock:                   &sync.RWMutex{},
+		Min:                    0,
+		Max:                    0,
+		Mean:                   0,
+	}
+}
+
 func (l *Latency) Reset() {
 	l.LastMinuteRequestTimes = make([]float64, 0)
-	l.lock = &sync.RWMutex{}
 	l.Min = 0
 	l.Max = 0
 	l.Mean = 0

@@ -6,7 +6,6 @@ import (
 	"file_manager/src/common/log"
 	"file_manager/src/common/notice"
 	"file_manager/src/configs"
-	"file_manager/src/monitor/jaeger"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -18,7 +17,6 @@ func init() {
 	configs.LoadConfigs(mode)
 	cf := configs.Get()
 	notice.InitNotification(cf.TelegramBotToken, cf.TelegramChatID)
-	jaeger.InitJaeger()
 }
 
 func main() {

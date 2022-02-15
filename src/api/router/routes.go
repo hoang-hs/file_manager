@@ -17,6 +17,7 @@ type RoutersIn struct {
 }
 
 func RegisterHandler(engine *gin.Engine, logger log.Logging) {
+	engine.Use(middleware.SendRequestEvent())
 	engine.Use(log.GinZap(logger.GetZap().Desugar()))
 	engine.Use(log.RecoveryWithZap(logger.GetZap().Desugar()))
 }

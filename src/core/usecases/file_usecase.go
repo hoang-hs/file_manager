@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"file_manager/src/api/services"
 	"file_manager/src/common/log"
 	"file_manager/src/core/entities"
 	"file_manager/src/core/errors"
@@ -12,7 +13,7 @@ import (
 type FileUseCase struct {
 }
 
-func NewFileUseCase() *FileUseCase {
+func NewFileUseCase() services.FileService {
 	return &FileUseCase{}
 }
 

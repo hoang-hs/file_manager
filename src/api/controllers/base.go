@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"file_manager/src/api/resources"
+	"file_manager/src/common/pubsub"
 	"file_manager/src/core/errors"
+	"file_manager/src/core/events"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,10 +17,12 @@ func NewBaseController() *baseController {
 }
 
 func (b *baseController) Success(c *gin.Context, data interface{}) {
+	pubsub.Publish(events.NewResponseEvent(c.Request.URL.Path, http.StatusOK))
 	c.JSON(http.StatusOK, data)
 }
 
 func (b *baseController) Error(c *gin.Context, httpCode int, message string) {
+	pubsub.Publish(events.NewResponseEvent(c.Request.URL.Path, httpCode))
 	c.JSON(httpCode, resources.NewMessageResource(message))
 	c.Abort()
 }
@@ -28,6 +32,7 @@ func (b *baseController) ErrorData(c *gin.Context, data errors.Error) {
 	if httpCode <= 0 {
 		httpCode = http.StatusBadRequest
 	}
+	pubsub.Publish(events.NewResponseEvent(c.Request.URL.Path, httpCode))
 	c.JSON(httpCode, data)
 }
 

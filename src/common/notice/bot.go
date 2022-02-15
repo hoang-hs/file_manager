@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
+	"log"
 	"strconv"
 	"time"
 )
@@ -30,24 +31,15 @@ func (bot *Bot) Send(p Package) Response {
 }
 
 func (bot *Bot) SendMessage(teleChan Channel, template Template) Response {
-	var message string
-	switch template.ParseMode {
-	case MarkdownV2:
-		// TODO preceding special character with '/'
-		message = fmt.Sprintf("%s%s%s %s %s", "*", template.Job, "*", "%0A", template.Message)
-	case HTML:
-		// TODO maybe preceding too :((
-		message = fmt.Sprintf("<strong>%s</strong> %s <pre>%s</pre>", template.Job, "\n", template.Message)
-	}
+	message := fmt.Sprintf("[%s] have message: \n %s", template.Job, template.Message)
 	url := bot.BaseURL + SendMessage
-	//api := fmt.Sprintf("%s?chat_id=%s&text=%s&parse_mode=%s", url, teleChan.ChatID, message, template.ParseMode)
 	req := fasthttp.AcquireRequest()
+	req.SetRequestURI(url)
 	req.Header.SetMethod("GET") //default, with other method(POST, DELETE,...), pls creat new method
 	query := req.URI().QueryArgs()
 	query.Add("chat_id", teleChan.ChatID)
 	query.Add("text", message)
-	query.Add("parse_mode", template.ParseMode)
-	req.SetRequestURI(url)
+	log.Printf("uri send to telegram: [%s]", req.URI().String())
 	response := fasthttp.AcquireResponse()
 	err := bot.httpClient.DoTimeout(req, response, requestTimeOut)
 	defer req.ConnectionClose()

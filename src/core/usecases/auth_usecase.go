@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"file_manager/src/api/request"
+	"file_manager/src/api/services"
 	"file_manager/src/common/log"
 	"file_manager/src/configs"
 	"file_manager/src/core/entities"
@@ -17,7 +18,7 @@ type AuthUseCase struct {
 	userQueryRepositoryPort ports.UserQueryRepositoryPort
 }
 
-func NewAuthUseCase(userQueryRepositoryPort ports.UserQueryRepositoryPort) *AuthUseCase {
+func NewAuthUseCase(userQueryRepositoryPort ports.UserQueryRepositoryPort) services.AuthService {
 	return &AuthUseCase{
 		userQueryRepositoryPort: userQueryRepositoryPort,
 	}

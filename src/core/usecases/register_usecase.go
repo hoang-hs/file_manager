@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"file_manager/src/api/request"
+	"file_manager/src/api/services"
 	"file_manager/src/common/log"
 	"file_manager/src/core/entities"
 	"file_manager/src/core/errors"
@@ -18,7 +19,7 @@ type RegisterUseCase struct {
 func NewRegisterService(
 	userQueryRepositoryPort ports.UserQueryRepositoryPort,
 	userCommandRepositoryPort ports.UserCommandRepositoryPort,
-) *RegisterUseCase {
+) services.RegisterService {
 	return &RegisterUseCase{
 		userQueryRepositoryPort:   userQueryRepositoryPort,
 		userCommandRepositoryPort: userCommandRepositoryPort,

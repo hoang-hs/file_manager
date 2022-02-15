@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"file_manager/src/api/services"
 	"file_manager/src/common/log"
 	"file_manager/src/core/entities"
 	"file_manager/src/core/enums"
@@ -20,7 +21,7 @@ type UpdateMetricUseCase struct {
 	graphite       *graphite.Graphite
 }
 
-func NewUpdateMetricUseCase(graphite *graphite.Graphite) *UpdateMetricUseCase {
+func NewUpdateMetricUseCase(graphite *graphite.Graphite) services.UpdateMetricService {
 	u := &UpdateMetricUseCase{
 		lockCheckExist: &sync.Mutex{},
 		domain:         "file_manager",
@@ -38,12 +39,14 @@ func (u *UpdateMetricUseCase) IncreaseRequestCount(path string) {
 }
 
 func (u *UpdateMetricUseCase) UpdateStatusCode(path string, statusCode int) {
+	u.checkApiMetricExist(path)
 	u.lockMetric.Lock()
 	u.metric[path].StatusCode[statusCode] += int64(1)
 	u.lockMetric.Unlock()
 }
 
 func (u *UpdateMetricUseCase) UpdateLatency(path string, took int64) {
+	u.checkApiMetricExist(path)
 	u.lockMetric.Lock()
 	u.metric[path].Latency.LastMinuteRequestTimes = append(u.metric[path].Latency.LastMinuteRequestTimes, float64(took))
 	u.lockMetric.Unlock()

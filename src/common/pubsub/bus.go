@@ -2,18 +2,14 @@ package pubsub
 
 import "file_manager/src/common/log"
 
-type EventProducer interface {
-	ProduceEvent() chan Event
-}
-
 type EventBus struct {
-	producer     EventProducer
+	producer     Producer
 	eventMapping map[string][]Subscriber
 }
 
-func NewEventBus(evenProducer EventProducer) *EventBus {
+func NewEventBus(publisher *publisher) *EventBus {
 	return &EventBus{
-		producer:     evenProducer,
+		producer:     publisher,
 		eventMapping: make(map[string][]Subscriber),
 	}
 }

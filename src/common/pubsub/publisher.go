@@ -4,6 +4,10 @@ type Publisher interface {
 	Publish(event Event)
 }
 
+type Producer interface {
+	ProduceEvent() chan Event
+}
+
 type publisher struct {
 	eventCh chan Event
 }
@@ -18,6 +22,6 @@ func (p *publisher) Publish(event Event) {
 	p.eventCh <- event
 }
 
-func (p *publisher) ProductEvent() chan Event {
+func (p *publisher) ProduceEvent() chan Event {
 	return p.eventCh
 }

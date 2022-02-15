@@ -8,7 +8,8 @@ type Metric struct {
 
 func NewMetric() *Metric {
 	return &Metric{
-		Latency: &Latency{},
+		StatusCode: make(map[int]int64, 0),
+		Latency:    NewLatency(),
 	}
 }
 

@@ -39,11 +39,11 @@ func LoadConfigs(mode string) {
 	var pathConfig string
 	switch mode {
 	case "dev":
-		pathConfig = `.env.dev`
+		pathConfig = `.env`
 	case "prod":
 		pathConfig = `.env.prod`
 	default:
-		pathConfig = `.env.dev`
+		pathConfig = `.env`
 	}
 	LoadEnv(pathConfig)
 	Common = &Config{
