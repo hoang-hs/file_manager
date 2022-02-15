@@ -59,10 +59,9 @@ func (d *UserRepositoryDecorator) generateCachingKeyDB(namespace, setKey, id str
 }
 
 func (d *UserRepositoryDecorator) getUserModelFromRemoteCachedData(cachedData interface{}) (*entities.User, error) {
-	data, _ := cachedData.(map[string]interface{})
-	newsDataBytes := (data[enums.DefaultKeyMapBin]).([]byte)
+	userBytes := cachedData.([]byte)
 	var user *entities.User
-	err := json.Unmarshal(newsDataBytes, &user)
+	err := json.Unmarshal(userBytes, &user)
 	if err != nil {
 		log.Errorf("json unmarshal user fail, err:[%s]", err)
 		return nil, err
@@ -71,12 +70,10 @@ func (d *UserRepositoryDecorator) getUserModelFromRemoteCachedData(cachedData in
 }
 
 func (d *UserRepositoryDecorator) parseMapFromUser(user *entities.User) (interface{}, error) {
-	cachingData := make(map[string]interface{})
-	newsBytes, err := json.Marshal(user)
+	userBytes, err := json.Marshal(user)
 	if err != nil {
 		log.Errorf("json marshal user fail, err:[%s]", err)
 		return nil, err
 	}
-	cachingData[enums.DefaultKeyMapBin] = newsBytes
-	return cachingData, nil
+	return userBytes, nil
 }
