@@ -24,19 +24,19 @@ func RegisterHandler(engine *gin.Engine, logger log.Logging) {
 
 func RegisterGinRouters(in RoutersIn) {
 	group := in.Engine.Group("/")
-	registerPublicRoutes(group, in)
+	registerPublicRouters(group, in)
 	group.Use(middleware.RequiredJwtAuthentication())
 	{
-		registerProtectedRoutes(group, in)
+		registerProtectedRouters(group, in)
 	}
 }
 
-func registerPublicRoutes(r *gin.RouterGroup, in RoutersIn) {
+func registerPublicRouters(r *gin.RouterGroup, in RoutersIn) {
 	r.POST("/signup", in.RegisterController.SignUp)
 	r.POST("/login", in.LoginController.Login)
 }
 
-func registerProtectedRoutes(r *gin.RouterGroup, in RoutersIn) {
+func registerProtectedRouters(r *gin.RouterGroup, in RoutersIn) {
 	r.GET("/tree", in.FileController.Display)
 	r.POST("/upload", in.FileController.UploadFile)
 	r.DELETE("/delete", in.FileController.DeleteFile)
