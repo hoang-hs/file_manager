@@ -16,23 +16,25 @@ func init() {
 	mode := "dev"
 	configs.LoadConfigs(mode)
 	cf := configs.Get()
+	logger, err := log.NewLogger()
+	if err != nil {
+		panic(err)
+	}
+	log.RegisterGlobal(logger)
 	notice.InitNotification(cf.TelegramBotToken, cf.TelegramChatID)
 }
 
 func main() {
-	cf := configs.Get()
 	fx.New(
-		fx.Supply(cf),
-		fx.Provide(log.NewLogger),
-		fx.Invoke(log.RegisterGlobal),
-		fx.Options(bootstrap.LoadRepositories(cf)...),
+		fx.Provide(configs.Get),
+		fx.Provide(log.GetGlobalLog),
+		fx.Options(bootstrap.LoadRepositories()...),
 		fx.Options(bootstrap.LoadUseCases()...),
 		fx.Options(bootstrap.LoadControllers()...),
 		fx.Options(bootstrap.LoadEngine()...),
 
-		fx.Options(bootstrap.LoadGraphite(cf)...),
+		fx.Options(bootstrap.LoadGraphite()...),
 		fx.Options(bootstrap.LoadListeners()...),
-		//fx.Options(bootstrap.All()...),
 		fx.Invoke(func(lc fx.Lifecycle, engine *gin.Engine) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

@@ -6,6 +6,10 @@ func RegisterGlobal(logger Logging) {
 	globalLogger = logger
 }
 
+func GetGlobalLog() Logging {
+	return globalLogger
+}
+
 func Info(args ...interface{}) {
 	globalLogger.Info(args...)
 }

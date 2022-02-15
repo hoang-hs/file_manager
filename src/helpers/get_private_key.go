@@ -1,10 +1,10 @@
 package helpers
 
 import (
-	configs2 "file_manager/src/configs"
+	"file_manager/src/configs"
 )
 
 func GetPrivateKey() ([]byte, error) {
-	privateKeyBytes := []byte(configs2.Get().SecretKey)
+	privateKeyBytes := []byte(configs.Get().SecretKey)
 	return privateKeyBytes, nil
 }

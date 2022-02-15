@@ -6,13 +6,13 @@ import (
 	"go.uber.org/fx"
 )
 
-func LoadGraphite(cf *configs.Config) []fx.Option {
+func LoadGraphite() []fx.Option {
 	return []fx.Option{
-		fx.Supply(newGraphite(cf.GraphiteHost, cf.GraphitePort)),
+		fx.Provide(newGraphite),
 	}
 }
 
-func newGraphite(host string, port int) *graphite.Graphite {
+func newGraphite(cf *configs.Config) *graphite.Graphite {
 	//graphiteClient, err := graphite.NewGraphite(host, port)
 	//if err != nil {
 	//	log.Fatalf("Can not connect to graphite, err: [%s]\n", err)
