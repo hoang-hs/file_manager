@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
-	"log"
 	"strconv"
 	"time"
 )
@@ -39,7 +38,6 @@ func (bot *Bot) SendMessage(teleChan Channel, template Template) Response {
 	query := req.URI().QueryArgs()
 	query.Add("chat_id", teleChan.ChatID)
 	query.Add("text", message)
-	log.Printf("uri send to telegram: [%s]", req.URI().String())
 	response := fasthttp.AcquireResponse()
 	err := bot.httpClient.DoTimeout(req, response, requestTimeOut)
 	defer req.ConnectionClose()

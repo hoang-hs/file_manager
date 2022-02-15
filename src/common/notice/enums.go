@@ -3,11 +3,6 @@ package notice
 import "time"
 
 const (
-	MarkdownV2 = "MarkdownV2"
-	HTML       = "HTML"
-)
-
-const (
 	BaseAPIEndpointURL    = "https://api.telegram.org/"
 	BaseBotApiEndpointURL = BaseAPIEndpointURL + "bot"
 )
