@@ -42,7 +42,11 @@ func (r *RegisterUseCase) SignUp(registerRequest *request.RegisterRequest) (*ent
 }
 
 func (r *RegisterUseCase) validate(registerRequest *request.RegisterRequest) (*entities.User, errors.Error) {
-	user, _ := r.userQueryRepositoryPort.FindByUsername(registerRequest.Username)
+	user, err := r.userQueryRepositoryPort.FindByUsername(registerRequest.Username)
+	if err != nil && err != errors.ErrEntityNotFound {
+		log.Errorf("Can not find user, err:[%s]", err)
+		return nil, errors.ErrSystemError
+	}
 	if user != nil {
 		return nil, errors.NewCustomHttpError(http.StatusConflict, "This username has exist")
 	}

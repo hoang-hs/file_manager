@@ -4,7 +4,6 @@ import (
 	"file_manager/src/adapter/caching"
 	"file_manager/src/adapter/decorators"
 	caching2 "file_manager/src/common/caching"
-	"file_manager/src/core/ports"
 	"file_manager/src/core/usecases"
 	"go.uber.org/fx"
 )
@@ -15,8 +14,6 @@ func LoadUseCases() []fx.Option {
 		fx.Provide(caching2.NewCacheStrategy),
 
 		fx.Provide(decorators.NewUserRepositoryDecorator),
-		fx.Provide(ports.NewUserQueryRepositoryPort),
-		fx.Provide(ports.NewUserCommandRepositoryPort),
 
 		fx.Provide(usecases.NewFileUseCase),
 		fx.Provide(usecases.NewAuthUseCase),

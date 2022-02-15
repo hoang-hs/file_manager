@@ -32,7 +32,7 @@ func (a *AuthUseCase) Authenticate(authRequest *request.AuthRequest) (*entities.
 		return nil, errors.ErrUnAuthenticated
 	}
 	if err != nil {
-		log.Errorf("Error when query to database: %s", err)
+		log.Errorf("Can not find user, err:[%s]", err)
 		return nil, errors.ErrSystemError
 	}
 	if !a.validatePassword(user.Password, authRequest.Password) {

@@ -4,6 +4,7 @@ import (
 	"file_manager/src/adapter/database/mappers"
 	"file_manager/src/common/log"
 	"file_manager/src/core/entities"
+	"file_manager/src/core/ports"
 	"github.com/google/uuid"
 )
 
@@ -11,7 +12,7 @@ type UserCommandRepository struct {
 	*baseRepository
 }
 
-func NewUserCommandRepository(baseRepository *baseRepository) *UserCommandRepository {
+func NewUserCommandRepository(baseRepository *baseRepository) ports.UserCommandRepositoryPort {
 	return &UserCommandRepository{
 		baseRepository: baseRepository,
 	}
